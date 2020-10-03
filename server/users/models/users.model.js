@@ -1,9 +1,9 @@
 const mongoose = require('../../common/services/mongoose.service').mongoose;
 const Schema = mongoose.Schema;
+var encrypt = require('mongoose-encryption');
 
 const userSchema = new Schema({
-    firstName: String,
-    lastName: String,
+    name: String,
     email: String,
     password: String,
     permissionLevel: Number,
@@ -15,6 +15,17 @@ const userSchema = new Schema({
     cbpSecret: String,
     cbpPassphrase: String
 });
+
+let encKey = process.env.MONGO_32BYTE_ENC_KEY;
+let sigKey = process.env.MONGO_64BYTE_SIG_KEY;
+
+userSchema.plugin(encrypt, { 
+    encryptionKey: encKey, signingKey: sigKey, encryptedFields: [
+        'cbpKey',
+        'cbpSecret',
+        'cbpPassphrase'
+    ] 
+})
 
 userSchema.virtual('id').get(function () {
     return this._id.toHexString();
@@ -32,11 +43,24 @@ userSchema.findById = function (cb) {
 const User = mongoose.model('Users', userSchema);
 
 exports.findByEmail = (email) => {
-    return User.find({email: email});
+    return User.find({email: email})
+    .then(result => {
+        let obj = {};
+        let users = [];
+        for (var i = 0 ; i < result.length; i++) {
+            obj = result[i].toJSON();
+            delete obj.__id;
+            delete result.__v;
+            users.push(obj);
+            obj = {};
+        }
+        return users;
+    });
 };
+
 exports.findById = (id) => {
     return User.findById(id)
-        .then((result) => {
+        .then(result => {
             result = result.toJSON();
             delete result._id;
             delete result.__v;
@@ -75,18 +99,20 @@ exports.count = () => {
     });
 };
 
-exports.patchUser = (id, userData) => {
+exports.patchCbpData = (email, userData) => {
     return new Promise((resolve, reject) => {
-        User.findById(id, function (err, user) {
-            if (err) reject(err);
-            for (let i in userData) {
-                user[i] = userData[i];
+        User.findOneAndUpdate(
+            { email },
+            { $set: {
+                cbpKey: userData.cbpKey,
+                cbpPassphrase: userData.cbpPassphrase,
+                cbpSecret: userData.cbpSecret
+            }},
+            (err,res)=>{
+                if(err) console.log(err)
+                console.log("Successfully updated user!");
             }
-            user.save(function (err, updatedUser) {
-                if (err) return reject(err);
-                resolve(updatedUser);
-            });
-        });
+        )
     })
 
 };

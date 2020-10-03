@@ -7,16 +7,14 @@ const cbpConfig = require('../common/cbpConfig');
 const Order = require('../../orders/schemas/Order');
 import { BigJS } from 'coinbase-pro-trading-toolkit/build/src/lib/types';
 const Logger = require('../../../server/common/services/logger');
+import { ApiKey } from '../interfaces/keys';
 
 require('dotenv').config();
 
-
-module.exports = (product: string, differential: number, dollarAmt: number, orderTypeInput: string, email: string) => {
+module.exports = (product: string, differential: number, dollarAmt: number, orderTypeInput: string, email: string, keys: ApiKey) => {
     let marketPrice: number;
     let buyDifferential: number = Number(differential/100); //convert differential from % to decimal    
-
-    const coinbaseProConfig: CoinbaseProConfig = cbpConfig();
-
+    const coinbaseProConfig: CoinbaseProConfig = cbpConfig(keys);
     const coinbasePro = new CoinbaseProExchangeAPI(coinbaseProConfig);
 
     const buildOrder = () => {

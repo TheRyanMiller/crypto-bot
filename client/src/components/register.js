@@ -40,12 +40,8 @@ const Register = (props) =>{
         event.preventDefault();
         console.log(validated);
         if(validateForm()){
-            console.log("SUBMITTED!!")
-            let json = {email, password, enableEmailAlerts, cbpKey, cbpSecret, cbpPassphrase};
-            console.log(json)
             api().post('/users', {email, password, enableEmailAlerts, cbpKey, cbpSecret, cbpPassphrase}).then((resp) => {   
                 console.log(resp)
-                if(resp.data.id) console.log("User created success!")
             }).catch(err=>console.log("Cannot send auth request.",err))
         }
     }

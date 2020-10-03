@@ -1,10 +1,11 @@
 import { AuthenticatedClient } from 'coinbase-pro';
 import { CoinbaseProConfig } from 'coinbase-pro-trading-toolkit/build/src/exchanges/coinbasePro/CoinbaseProInterfaces';
 import { FillFilter } from 'coinbase-pro';
+import { ApiKey } from '../interfaces/keys';
 const cbpConfig = require('../common/cbpConfig');
 require('dotenv').config();
 
-module.exports = (id: string, productId: string) => new Promise((resolve,reject)=>{
+module.exports = (id: string, keys: ApiKey) => new Promise((resolve,reject)=>{
     const coinbaseProConfig: CoinbaseProConfig = cbpConfig();
     let authClient = new AuthenticatedClient(coinbaseProConfig.auth.key, coinbaseProConfig.auth.secret, coinbaseProConfig.auth.passphrase, coinbaseProConfig.apiUrl);
     let fillFilter: FillFilter = {

@@ -32,12 +32,10 @@ exports.isPasswordAndUserMatch = (req, res, next) => {
                 console.log(hash)
                 console.log(passwordFields[1])
                 if (hash === passwordFields[1]) {
+                    delete user[0].password;
+                    let u = user[0];
                     req.body = {
-                        userId: user[0]._id,
-                        email: user[0].email,
-                        permissionLevel: user[0].permissionLevel,
-                        provider: 'email',
-                        name: user[0].firstName + ' ' + user[0].lastName,
+                        user: u
                     };
                     return next();
                 } else {

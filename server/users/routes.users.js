@@ -17,9 +17,9 @@ exports.routesConfig = function (app) {
         //ValidationMiddleware.validJWTNeeded,
         UsersController.count
     ]);
-    app.get('/users/:userId', [
+    app.get('/users/:email', [
         ValidationMiddleware.validJWTNeeded,
-        UsersController.getById
+        UsersController.getByEmail
     ]);
     app.patch('/users/:userId', [
         ValidationMiddleware.validJWTNeeded,

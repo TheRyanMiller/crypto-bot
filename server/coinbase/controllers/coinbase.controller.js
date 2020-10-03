@@ -1,9 +1,9 @@
 const crypto = require('crypto');
 let placeOrder = require('../scripts/orderPlacer.ts');
+const UserModel = require('../../users/models/users.model');
 
 exports.placeOrder = (req, res) => {
     let differential;
-    console.log("YODELAYHEEEWHOOO!!!",req.jwt.email);
     if(!req.body.params || !req.body.params.differential){
         differential = process.env.BUY_DIFFERENTIAL;
     }
@@ -13,7 +13,7 @@ exports.placeOrder = (req, res) => {
         let dollarAmt = req.body.params.buySize;
         let orderType = req.body.params.orderType;
     }
-    placeOrder(product, differential, dollarAmt, orderType, req.jwt.email);
+    placeOrder(product, differential, dollarAmt, orderType, req.jwt.email, req.keys);
     return res.json({ success: true, data: null });
 };
 
@@ -32,7 +32,7 @@ exports.syncOrders = (req, res) => {
 };
 
 exports.getFills = (req, res) => {
-    require('../scripts/getFills.ts')(req.params.orderId).then(data=>{
+    require('../scripts/getFills.ts')(req.params.orderId, req.keys).then(data=>{
         return res.json({ success: true, data: data });
     })
     .catch(err=>{
@@ -41,9 +41,24 @@ exports.getFills = (req, res) => {
     });
 };
 
+exports.getKeys = (req, res, next) => {
+    UserModel.findByEmail(req.jwt.user.email).then(result => {
+        let user;
+        if(result && result.length > 0) {
+            user = result[0];
+            let keys = {};
+            keys.key = user.cbpKey;
+            keys.secret = user.cbpSecret
+            keys.passphrase = user.cbpPassphrase;
+            req.keys = keys;
+            next();
+        }
+        return new Error();
+    });    
+};
+
 exports.getMarketPrice = (req, res) => {
     require('../scripts/getMarketPrice.ts')(req.query.productId).then(data=>{
-
         console.log("PRICE: ",data)
         return res.json({ success: true, data: data })
     })
@@ -54,7 +69,7 @@ exports.getMarketPrice = (req, res) => {
 }
 
 exports.getAccountBalances = (req, res) => {
-    require('../scripts/getAccountInfo.ts')().then(response=>{
+    require('../scripts/getAccountInfo.ts')(req.keys).then(response=>{
         let balances = [];
         let item = {};
         Object.entries(response.data).forEach(v=>{
@@ -79,7 +94,7 @@ exports.getAccountBalances = (req, res) => {
 }
 
 exports.getOrder = (req, res) => {
-    require('../scripts/getOrder.ts')(req.params.orderId).then(data=>{
+    require('../scripts/getOrder.ts')(req.params.orderId, req.keys).then(data=>{
         return res.json({ success: true, data: data });
     })
     .catch(err=>{

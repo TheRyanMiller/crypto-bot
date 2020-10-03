@@ -1,16 +1,25 @@
-## Crypto-bot by Ryan Miller  
+# Crypto-bot by Ryan Miller  
 
-> :warning: **This app is designed to be self-hosted so that you never need to give anyone your CBP API keys**: Use at your own risk!
+> :warning: **This app is designed to be self-hosted so that you never need to give anyone your Coinbase Pro API keys**
 
-Crypto-bot is an open sourced app built with the idea of dollar-cost-averaging investments into Bitcoin. This app uses the Coinbase Pro (CBP) API to provide features and data not available via the CBP web interface, including the ability to schedule recurring orders at customizable limit prices and intervals. Using Crypto-bot, you can acheive much lower transaction fees than through other recurring-buy services (e.g. Swan, Coinbase standard, etc.).
-  
+Crypto-bot is an open source app built with the idea of dollar-cost-averaging investments into cryptocurrencies (like Bitcoin, Ethereum, etc). This app uses the Coinbase Pro (CBP) API to provide features and data not available via standard Coinbase or Coinbase Pro web interfaces.  
+For example, using Crypto-bot enables:
+- Low transaction fees (0.5%)
+- Scheduled and recurring market buys at customizable interval
+- Scheduled and recurring limit buys at customizable interval
+
+## Security
 Please use at your own risk, and never share your API keys.
+- Crypto-bot utilizes JSON Web Token (JWT) to secure interactions between the application front-end and back-end services. 
+- Users supply their Coinbase Pro API keys at registration, which are stored encrypted (AES-256-CBC) in the MongoDB database and never exposed back to user/front-end.
+  
 
-
+<br />
+<br /><p align="center">
 <img src="http://g.recordit.co/XHwASNetDH.gif"
      alt="App overveiw"
      style="margin-right: 0 auto; max-width: 80%" />  
-  
+</p>
 
 ## Installation
 

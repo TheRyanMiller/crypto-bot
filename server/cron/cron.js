@@ -2,6 +2,8 @@ const cron = require('node-cron');
 const Log = require('../common/schemas/Log');
 const Config = require('../profile/schemas/Config');
 const placeOrder = require('../coinbase/scripts/orderPlacer.ts');
+const UsersController = require('../users/controllers/users.controller');
+
 const { noUsersExist } = require('../common/middlewares/auth.validation.middleware');
 const Logger = require('../common/services/logger');
 
@@ -17,7 +19,7 @@ const initialize = exports.initialize = () =>{
     Config.model.find({isActive:true}).then((data,err) => {
         if(data){
             data.forEach(c => {
-                if(c.cronValue && c.botEnabled){
+                if(c.cronValue && c.botEnabled && c.email){
                     set(c);
                 }
             })
@@ -44,7 +46,7 @@ const getAll = exports.getAll = () => {
     return tasklessCrons;
 }
 
-const set = exports.set = (config, token) => {
+const set = exports.set = (config) => {
     if(config.botEnabled){
         if(cron.validate(config.cronValue)){
             //Kill existing cron if one exists
@@ -55,7 +57,12 @@ const set = exports.set = (config, token) => {
                 }
             }
             newTask = cron.schedule(config.cronValue, () =>  {
-                placeOrder(config.id, config.limitOrderDiff, config.buySize, config.buyType, config.email);
+                console.log("Cron fired...")
+                console.log("Must have valid email: "+config.email);
+                UsersController.getCbpKeys(config.email).then(keys => {
+                    console.log(keys)
+                    placeOrder(config.id, config.limitOrderDiff, config.buySize, config.buyType, config.email, keys);
+                })
             });
             cronArray.push({id: config.id, task: newTask, schedule: config.cronValue, email: config.email});
             Logger("Crypto-bot enabled", "Crypto-bot enabled with cron: "+config.cronValue,"info", config.cronValue, config.email);

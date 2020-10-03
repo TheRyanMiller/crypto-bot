@@ -8,6 +8,7 @@ const jwt_life_in_seconds = Number(process.env.JWT_EXPIRATION_IN_SECONDS);
 
 exports.login = (req, res) => {
     try {
+        console.log(req.body)
         let refreshId = req.body.userId + jwtSecret;
         let salt = crypto.randomBytes(16).toString('base64');
         let hash = crypto.createHmac('sha512', salt).update(refreshId).digest("base64");

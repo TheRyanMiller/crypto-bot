@@ -1,9 +1,10 @@
 import { Order } from '../interfaces/order';
 import { api } from '../../common/services/apiAuth';
+import { ApiKey } from '../interfaces/keys';
 
 require('dotenv').config();
 
-module.exports = (token: string) => {
+module.exports = (token: string, keys: ApiKey) => {
     return new Promise((resolve,reject)=>{
         let allCBPromises: any[] = [];
         let openDbOrders: Order[];
@@ -16,8 +17,8 @@ module.exports = (token: string) => {
             console.log()
             if(openDbOrders.length>0){
                 openDbOrders.forEach(dbOrder => {
-                    allCBPromises.push(require('./promiseTypes/fillsPromise.ts')(dbOrder, token, dbOrder.productId));
-                    allCBPromises.push(require('./promiseTypes/orderPromise.ts')(dbOrder.id, token, dbOrder.productId));
+                    allCBPromises.push(require('./promiseTypes/fillsPromise.ts')(dbOrder, token, dbOrder.productId, keys));
+                    allCBPromises.push(require('./promiseTypes/orderPromise.ts')(dbOrder.id, token, dbOrder.productId, keys));
                 })
             }
             else{

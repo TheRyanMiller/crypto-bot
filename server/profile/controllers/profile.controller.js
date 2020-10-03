@@ -46,11 +46,11 @@ exports.saveConfig = (req, res) => {
             limitOrderDiff: config.limitOrderDiff,
             cronValue: config.cronValue,
             buyType: config.buyType,
-            email: req.jwt.email
+            email: req.jwt.user.email
         }
     }
     let options = {new: true, upsert: false, useFindAndModify: false};
-    Config.model.findOneAndUpdate({id:config.id}, set, options, (err, data) => {
+    Config.model.findOneAndUpdate({id:config.id, email:config.email}, set, options, (err, data) => {
         if (err) return res.json({ success: false, error: err });
         cron.kill();
         cron.set(config,null,req.jwt.email);
