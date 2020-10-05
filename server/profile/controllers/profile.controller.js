@@ -37,7 +37,7 @@ exports.getAllActiveConfigs = (req, res) => {
 
 exports.saveConfig = (req, res) => {
     let config = req.body.params;
-    config.email = req.jwt.email;
+    config.email = req.jwt.user.email;
     let err = null;
     let set = {
         $set: { 
@@ -53,7 +53,7 @@ exports.saveConfig = (req, res) => {
     Config.model.findOneAndUpdate({id:config.id, email:config.email}, set, options, (err, data) => {
         if (err) return res.json({ success: false, error: err });
         cron.kill();
-        cron.set(config,null,req.jwt.email);
+        cron.set(config,null,req.jwt.user.email);
         let log = new Log.model({
             type: "Config change",
             message: "New config saved",

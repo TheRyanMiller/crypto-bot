@@ -28,7 +28,7 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
             productId: product,
             clientId: null,
             price: orderPrice.toFixed(2),
-            size: (dollarAmt/orderPrice).toFixed(8),
+            size: (dollarAmt/orderPrice).toFixed(6),
             side: 'buy',
             orderType: otype,
             postOnly: true

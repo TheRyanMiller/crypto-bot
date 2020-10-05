@@ -13,7 +13,7 @@ exports.placeOrder = (req, res) => {
         let dollarAmt = req.body.params.buySize;
         let orderType = req.body.params.orderType;
     }
-    placeOrder(product, differential, dollarAmt, orderType, req.jwt.email, req.keys);
+    placeOrder(product, differential, dollarAmt, orderType, req.jwt.user.email, req.keys);
     return res.json({ success: true, data: null });
 };
 
