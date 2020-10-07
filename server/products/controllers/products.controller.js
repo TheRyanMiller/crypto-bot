@@ -5,7 +5,7 @@ require('dotenv').config();
 exports.refreshAvailableProducts = (req, res) => {
     let configs;
     let config;
-    Config.model.find({}).then(results=>{
+    Config.model.find({email: req.jwt.user.email}).then(results=>{
         configs = results;
         res.status(200).send({data: configs});  
     })
@@ -18,6 +18,7 @@ exports.refreshAvailableProducts = (req, res) => {
                     config = new Config.model({
                         id: p.id,
                         product: new Product.model(p),
+                        email: req.jwt.user.email,
                         botEnabled: false,
                         buySize: 10, //big number
                         buyType: "limit",
@@ -28,7 +29,6 @@ exports.refreshAvailableProducts = (req, res) => {
                         isDefault: counter==0,
                         product: new Product.model(p)
                     })
-                    //let product = new Product.model(p);
                     config.save().then(res=>{
                         //
                     }).catch(err => console.log(err))
@@ -43,6 +43,7 @@ exports.refreshAvailableProducts = (req, res) => {
                         config = new Config.model({
                             id: p.id,
                             product: new Product.model(p),
+                            email: req.jwt.user.email,
                             botEnabled: false,
                             buySize: 10, //big number
                             buyType: "limit",
@@ -69,7 +70,7 @@ exports.updateProductConfig = (req, res) => {
     req.body.params.forEach(p=>{
         let product = new Product.model(p);
         Product.model.findOneAndUpdate(
-            { id: p.id },
+            { id: p.id, email: req.jwt.user.email },
             { $set: { cancel_only: p.cancel_only } },
             { upsert: true, new: true },
             (err,res)=>{

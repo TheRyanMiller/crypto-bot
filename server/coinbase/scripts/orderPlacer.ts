@@ -37,14 +37,13 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
     }
 
     coinbasePro.loadMidMarketPrice(product).then((price: BigJS) => {
-        console.log("Setting Order Price to: "+(Number(price) - (Number(price) * buyDifferential)).toFixed(2));
+        console.log("Current "+product+" price is: "+(Number(price) - (Number(price) * buyDifferential)).toFixed(2));
         marketPrice = Number(price.toFixed(8));
     })
     .then(()=>{
         coinbasePro.placeOrder(buildOrder()).then((o: LiveOrder) => {
             return coinbasePro.loadOrder(o.id);
         }).then((o: any) => {
-            console.log(o.extra)
             if(o.extra && o.extra.done_reason=="canceled"){
                 o.status = "canceled";
             }
@@ -71,7 +70,7 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
             })
             myOrder.save((err: any)=>{
                 if(err) return console.log("Error writing new order data to mongodb.");
-                console.log("Coinbase order placed, and successful write to local db.");
+                console.log(o.extra.type+" order placed, and successful write to local db.");
                 Logger("New "+product+" order placed", "New  "+product+" order has been placed: "+myOrder.id, "info", JSON.stringify(myOrder), email);
                 return;
             });

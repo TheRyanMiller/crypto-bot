@@ -74,13 +74,18 @@ const Profile = (props) =>{
         }
     }
 
+    const handleLogout = () => {
+      localStorage.removeItem("jwt-access-token");
+      localStorage.removeItem("jwt-refresh-token");
+      window.location.href="/";
+    }
+
     let profileView = ( 
-        <div className="Login">
+        <div>
             <Form validated={validated} onSubmit={handleSubmit}>
-                <FormGroup controlId="userinfo">                
-                <Form.Label>User Email: {email}</Form.Label><br />
+                <FormGroup controlId="userinfo">
                 <Form.Label>Enable Alert Emails</Form.Label><br />
-                <Switch checked={enableEmailAlerts} onChange={(el, state) => this.handleSwitch(el, state)} name='test' />
+                <Switch checked={enableEmailAlerts} onChange={(el, state) => setEnableEmailAlerts(!enableEmailAlerts)} name='test' />
                 <br /><br />
                 <Form.Label>Old Password</Form.Label>
                 <FormControl
@@ -145,7 +150,9 @@ const Profile = (props) =>{
                 </FormGroup>
                 <Button block disabled={false} type="submit">
                 Save
-                </Button>
+                </Button><br />
+                <div type="button" className="btn btn-outline-secondary" onClick={()=>handleLogout()}>Logout</div>
+
             </Form>
         </div>
     );

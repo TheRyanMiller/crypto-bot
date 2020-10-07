@@ -46,6 +46,21 @@ const getAll = exports.getAll = () => {
     return tasklessCrons;
 }
 
+const getCronsByEmail = exports.getCronsByEmail = (email) => {
+    let tasklessCrons = [];
+    let cronItem = {};
+    cronArray.forEach(c=>{
+        if(email === c.email){
+            cronItem.id = c.id;
+            cronItem.schedule = c.schedule;
+            cronItem.email = c.email;
+            tasklessCrons.push(cronItem);
+            cronItem = {};
+        }
+    })
+    return tasklessCrons;
+}
+
 const set = exports.set = (config) => {
     if(config.botEnabled){
         if(cron.validate(config.cronValue)){
@@ -57,10 +72,7 @@ const set = exports.set = (config) => {
                 }
             }
             newTask = cron.schedule(config.cronValue, () =>  {
-                console.log("Cron fired...")
-                console.log("Must have valid email: "+config.email);
                 UsersController.getCbpKeys(config.email).then(keys => {
-                    console.log(keys)
                     placeOrder(config.id, config.limitOrderDiff, config.buySize, config.buyType, config.email, keys);
                 })
             });

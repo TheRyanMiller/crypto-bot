@@ -93,7 +93,6 @@ exports.count = () => {
         let query = {};
         User.countDocuments(query,(err, count)=>{
             if(err) reject(err);
-            console.log("COUNT RESOULT",count);
             resolve(count);
         })
     });

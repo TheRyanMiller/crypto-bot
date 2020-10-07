@@ -18,7 +18,7 @@ exports.listLogs = (req, res) => {
 };
 
 exports.getConfig = (req, res) => {
-    let query = {id: req.query.product};
+    let query = {id: req.query.product, email: req.jwt.user.email };
     let sort = { createdAt : -1 };
     Config.model.findOne(query).sort(sort).then((data,err) => {
         if (err) return res.json({ success: false, error: err });
@@ -27,7 +27,7 @@ exports.getConfig = (req, res) => {
 };
 
 exports.getAllActiveConfigs = (req, res) => {
-    let query = { isActive:true };
+    let query = { isActive:true, email: req.jwt.user.email };
     let sort = { id : -1 };
     Config.model.find(query).sort(sort).then((data,err) => {
         if (err) return res.json({ success: false, error: err });
@@ -70,7 +70,8 @@ exports.saveConfig = (req, res) => {
 };
 
 exports.setActive = (req, res) => {
-    let query = {id: req.body.params.id};
+    let query = {id: req.body.params.id, email: req.jwt.user.email};
+    console.log(req.jwt.user.email)
     console.log(req.body.params.id+" IS ACTIVE: ",req.body.params.isActive)
     let set = {$set: { isActive: req.body.params.isActive }}
     Config.model.findOneAndUpdate(query, set).then((data,err) => {
@@ -129,5 +130,10 @@ exports.addIcon = (req, res) => {
 
 exports.getCrons = (req, res) => {
     let crons = cron.getAll();
+    return res.json({ success: true, data: crons })
+};
+
+exports.getCronsByEmail = (req, res) => {
+    let crons = cron.getCronsByEmail(req.jwt.user.email);
     return res.json({ success: true, data: crons })
 };

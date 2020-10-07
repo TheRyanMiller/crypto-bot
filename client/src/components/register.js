@@ -24,9 +24,9 @@ const Register = (props) =>{
     const checkDatabaseForUsers = () => {
         api().get('/users/count').then((resp) => {
             //if no users exist, route to /register
-                let num = resp.data.data;
+                let userCount = resp.data.data;
                 console.log("NUMBER OF USERS FOUND: ",resp.data)
-            if(num === 0) {
+            if(userCount === 0) {
                 setShowSpinner(false);
             }
             else{
@@ -44,6 +44,12 @@ const Register = (props) =>{
                 console.log(resp)
             }).catch(err=>console.log("Cannot send auth request.",err))
         }
+    }
+
+    const divStyle = {
+        fontSize: "14px",
+        color: "white",
+        textAlign: "left"
     }
 
     function validateForm() {
@@ -65,8 +71,11 @@ const Register = (props) =>{
     }
 
     let register = ( 
-        <div className="Login">
+        <div className="register">
             <Form validated={validated} onSubmit={handleSubmit}>
+                <div className="centerFlex" > 
+                    <p style={divStyle}>Already have an account? <a href="/login">Login here.</a></p>
+                </div>
                 <FormGroup controlId="userinfo">
                 <Form.Label>Name</Form.Label>
                 <FormControl
@@ -102,7 +111,7 @@ const Register = (props) =>{
                     type="password"
                 /><br /><br />
                 <Form.Label>Enable Alert Emails</Form.Label><br />
-                <Switch checked={enableEmailAlerts} onChange={(el, state) => this.handleSwitch(el, state)} name='test' />
+                <Switch checked={enableEmailAlerts} onChange={(el, state) => setEnableEmailAlerts(!enableEmailAlerts)} name='test' />
                 </FormGroup>
                 <FormGroup controlId="cbp">
                 <div><hr /></div>
@@ -142,7 +151,8 @@ const Register = (props) =>{
                 </FormGroup>
                 <Button block disabled={false} type="submit">
                 Register
-                </Button>
+                </Button><br />
+                
             </Form>
         </div>
     );

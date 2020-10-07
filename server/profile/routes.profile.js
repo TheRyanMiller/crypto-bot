@@ -30,7 +30,7 @@ exports.routesConfig = function (app) {
 
     app.get('/profile/getCrons', [
         ValidationMiddleware.validJWTNeeded,
-        ProfileController.getCrons
+        ProfileController.getCronsByEmail
     ]);
 
     app.post('/profile/addIcon', [

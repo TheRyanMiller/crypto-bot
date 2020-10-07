@@ -99,7 +99,6 @@ exports.getUserByEmail = (email) => {
 };
 
 exports.getCbpKeys = (email) => new Promise(function(resolve, reject) {
-    console.log("In getCbpKeys")
     UserModel.findByEmail(email)
         .then((result) => {
             let user;

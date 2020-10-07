@@ -88,7 +88,10 @@ const Login = (props) =>{
         </FormGroup>
         <Button block disabled={false} type="submit">
           Login
-        </Button>
+        </Button><br />
+        <div className="centerFlex" > 
+          <p style={divStyle}>New user? <a href="/register">Click here</a> to register.</p>
+        </div>
         <pre style={divStyle}><span style={divStyle}>{serverReply}</span></pre>
       </form>
     </div>
