@@ -34,6 +34,7 @@ exports.routesConfig = function (app) {
     ]);
 
     app.post('/profile/addIcon', [
+        ValidationMiddleware.validJWTNeeded,
         ProfileController.addIcon
     ]);
 };

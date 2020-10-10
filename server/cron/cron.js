@@ -77,7 +77,7 @@ const set = exports.set = (config) => {
                 })
             });
             cronArray.push({id: config.id, task: newTask, schedule: config.cronValue, email: config.email});
-            Logger("Crypto-bot enabled", "Crypto-bot enabled with cron: "+config.cronValue,"info", config.cronValue, config.email, true);
+            Logger("Crypto-bot enabled", "Crypto-bot enabled "+config.id+" with cron: "+config.cronValue,"info", config.cronValue, config.email, true);
             console.log("~~~CronArray has been Updated:")
             cronArray.forEach(c=>{
                 console.log(c.id,c.schedule,c.task.getStatus());

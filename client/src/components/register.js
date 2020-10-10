@@ -16,24 +16,26 @@ const Register = (props) =>{
     const [cbpPassphrase, setCbpPassphrase] = useState("");
     const [showSpinner, setShowSpinner] = useState(true);
     const [enableEmailAlerts, setEnableEmailAlerts] = useState(true);
+    const [registrationSuccessful, setRegistrationSuccessful] = useState(false);
 
     useEffect(() =>{
         checkDatabaseForUsers();
     },[])
 
     const checkDatabaseForUsers = () => {
-        api().get('/users/count').then((resp) => {
-            //if no users exist, route to /register
-                let userCount = resp.data.data;
-                console.log("NUMBER OF USERS FOUND: ",resp.data)
-            if(userCount === 0) {
-                setShowSpinner(false);
-            }
-            else{
-                //window.location.href="/";
-                setShowSpinner(false);
-            }
-        }).catch(err => console.log("Unable to get user count.",err))
+        if(localStorage.getItem("jwt-access-token")) window.location.href="/";
+        // api().get('/users/count').then((resp) => {
+        //     //if no users exist, route to /register
+        //         let userCount = resp.data.data;
+        //         console.log("NUMBER OF USERS FOUND: ",resp.data)
+        //     if(userCount === 0) {
+        //         setShowSpinner(false);
+        //     }
+        //     else{
+        //         //window.location.href="/";
+        //         setShowSpinner(false);
+        //     }
+        // }).catch(err => console.log("Unable to get user count.",err))
     }
     
     const handleSubmit = (event) => {
@@ -42,7 +44,8 @@ const Register = (props) =>{
         if(validateForm()){
             api().post('/users', {email, password, enableEmailAlerts, cbpKey, cbpSecret, cbpPassphrase}).then((resp) => {   
                 console.log(resp);
-                window.location.href="/";
+                setRegistrationSuccessful(true);
+                setTimeout(() => {  window.location.href="/"; }, 2000);
             }).catch(err=>console.log("Cannot send auth request.",err))
         }
     }
@@ -50,7 +53,9 @@ const Register = (props) =>{
     const divStyle = {
         fontSize: "14px",
         color: "white",
-        textAlign: "left"
+        textAlign: "left",
+        margin: "auto 0",
+        textAlign: "center"
     }
 
     function validateForm() {
@@ -157,6 +162,13 @@ const Register = (props) =>{
             </Form>
         </div>
     );
+
+    let regSuccessDiv = (<div style={divStyle}>
+            <p>SUCCESS..</p>
+            <p>Returning you to login page</p>
+        </div>
+    );
+    if(registrationSuccessful) register = regSuccessDiv;
     let spinner = (<div className="loader">Loading...</div>);
     
     return (<> {showSpinner ? spinner : register} </>);

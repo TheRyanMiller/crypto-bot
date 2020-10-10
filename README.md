@@ -11,7 +11,8 @@ For example, using Crypto-bot enables:
 ## Security
 Please use at your own risk, and never share your API keys.
 - Crypto-bot utilizes JSON Web Token (JWT) to secure interactions between the application front-end and back-end services. 
-- Users supply their Coinbase Pro API keys at registration, which are stored encrypted (AES-256-CBC) in the MongoDB database and never exposed back to user/front-end.
+- Coinbase Pro API keys are stored encrypted (AES-256-CBC) in the MongoDB database and never exposed back to user/front-end.
+- User sessions expire every 60 minutes (based on JWT / Access Token expiration)
   
 
 <br />

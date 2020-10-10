@@ -101,7 +101,7 @@ exports.addIcon = (req, res) => {
                 fs.readFile(fileStr+ticker+".png", (err, img)=>{
                     try{
                         if(err) throw "cannot find ticker"
-                        query = {id: c.id};
+                        query = {id: c.id, email: c.email};
                         set = {$set: { icon:  {data: img, contentType: "image/png"}}};
                         Config.model.findOneAndUpdate(query, set).then((data,err) => {
                             console.log(count++, numConfigs-1);
@@ -113,7 +113,7 @@ exports.addIcon = (req, res) => {
                         console.log(err);
                         fs.readFile(fileStr+"yoyow.png", (err, img)=>{
                             if(err) return res.json({ success: false, error:err });
-                            query = {id: c.id};
+                            query = {id: c.id, email: c.email};
                             set = {$set: { icon:  {data: img, contentType: "image/png"}}};
                             Config.model.findOneAndUpdate(query, set).then((data,err) => {
                                 console.log(count++, numConfigs-1);
