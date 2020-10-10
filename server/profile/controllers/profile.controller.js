@@ -8,7 +8,7 @@ const mongoose = require("../../common/services/mongoose.service").mongoose;
 const Logger = require('../../common/services/logger');
 
 exports.listLogs = (req, res) => {
-    let query = {};
+    let query = { email: req.jwt.user.email };
     let sort = { createdAt : -1 };
     Log.model.find(query).sort(sort).then((data,err) => {
         if (err) return res.json({ success: false, error: err });

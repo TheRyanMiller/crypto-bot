@@ -50,6 +50,7 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
             let myOrder = new Order({
                 _id: o.id,
                 id: o.id,
+                email: email,
                 price: o.price,//.toFixed(8), //big number
                 size: o.size,//.toFixed(8), //big number
                 totalUsdSpent: dollarAmt,

@@ -7,6 +7,7 @@ const OrderSchema = new Schema(
   {
     _id: String,
     id: String,
+    email: String,
     price: Number, //big number
     size: Number, //big number
     totalUsdSpent: Number,

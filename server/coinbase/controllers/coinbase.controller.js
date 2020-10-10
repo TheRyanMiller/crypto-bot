@@ -74,7 +74,6 @@ exports.getAccountBalances = (req, res) => {
         let item = {};
         Object.entries(response.data).forEach(v=>{
             item.id = v[0]
-            //console.log(v)
             try{
                 item.balance = v[1].balance.toString();
                 item.available = v[1].available.toString();

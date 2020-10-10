@@ -6,7 +6,9 @@ const LogSchema = new Schema(
     type: String, //FailedOrder
     logLevel: String, //insufficientfunds
     message: String, //insufficientfunds
-    data: String
+    data: String,
+    email: String,
+    isAdmin: Boolean
   },{ timestamps: true }
 );
 

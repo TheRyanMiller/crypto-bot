@@ -15,7 +15,7 @@ exports.listOpenOrders = (req, res) => {
 };
 
 exports.listAllOrders = (req, res) => {
-    let query = {};
+    let query = {email: req.jwt.user.email};
     let sort = { createdAt : -1 };
     Order.find(query).sort(sort).then((data,err) => {
         if (err) return res.json({ success: false, error: err });
@@ -26,7 +26,8 @@ exports.listAllOrders = (req, res) => {
 
 exports.getById = (req, res) => {
     let orderId = req.params.orderId;
-    Order.find({_id:orderId},(err, data) => {
+    let query = {email: req.jwt.user.email, orderId};
+    Order.find(query,(err, data) => {
         if (err) return res.json({ success: false, error: err });
         return res.json({ success: true, data: data })
     })
@@ -45,6 +46,7 @@ exports.addOrder = (req, res) => {
     let myOrder = new Order({
         _id: o.id,
         id: o.id,
+        email: req.jwt.user.email,
         price: o.price,//.toFixed(8), //big number
         size: o.size,//.toFixed(8), //big number
         totalUsdSpent: req.body.dollarAmt,
@@ -74,11 +76,12 @@ exports.addOrder = (req, res) => {
 exports.updateById = (req, res) => {
     let o = req.body.order;
     let options = {new: true, upsert: true, useFindAndModify: false};
+    let query = {email:req.jwt.user.email,id:o.id};
     console.log(o.extra)
     if(o.extra && o.extra.done_reason=="canceled"){
         o.status = "canceled";
     }
-    Order.findOneAndUpdate({id:o.id},{
+    Order.findOneAndUpdate(query,{
       //update
         _id: o.id,
         id: o.id,
@@ -114,7 +117,8 @@ exports.logFailed = (req, res) => {
                 totalUsdSpent: Number(req.body.dollarAmt),
                 lastSyncDate: new Date(),
                 time: o.time,
-                productId: o.productId
+                productId: o.productId,
+                email: req.jwt.user.email
             }
         })
     failedOrder.save((err)=>{

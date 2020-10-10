@@ -41,7 +41,8 @@ const Register = (props) =>{
         console.log(validated);
         if(validateForm()){
             api().post('/users', {email, password, enableEmailAlerts, cbpKey, cbpSecret, cbpPassphrase}).then((resp) => {   
-                console.log(resp)
+                console.log(resp);
+                window.location.href="/";
             }).catch(err=>console.log("Cannot send auth request.",err))
         }
     }

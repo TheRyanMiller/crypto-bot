@@ -24,7 +24,7 @@ function App() {
   useEffect(() =>{
     if(localStorage.getItem("jwt-access-token")){
       api().get('/profile/getAllActiveConfigs').then((resp) => {
-            
+        console.log(resp)
         if(!!resp.data.data){ // In case no data exists in DB
             let allConfigs = resp.data.data;
             let products = [];

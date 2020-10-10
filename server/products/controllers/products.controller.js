@@ -26,8 +26,7 @@ exports.refreshAvailableProducts = (req, res) => {
                         cronValue: "0 0 1 1 *",
                         isActive: false, //User has set this active
                         isAvailable: true,
-                        isDefault: counter==0,
-                        product: new Product.model(p)
+                        isDefault: counter==0
                     })
                     config.save().then(res=>{
                         //
@@ -51,10 +50,8 @@ exports.refreshAvailableProducts = (req, res) => {
                             cronValue: "0 0 1 1 *",
                             isActive: false, //User has set this active
                             isAvailable: true,
-                            isDefault: false,
-                            product: new Product.model(p)
+                            isDefault: false
                         })
-                        //let product = new Product.model(p);
                         config.save().then(res=>{
                             //
                         }).catch(err => console.log(err))

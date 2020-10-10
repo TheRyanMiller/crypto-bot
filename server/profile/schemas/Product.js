@@ -6,6 +6,7 @@ const ProductSchema = new Schema(
     id: String,
     base_currency: String,
     quote_currency: String,
+    email: String,
     base_min_size: String,
     base_max_size: String,
     quote_increment: String,
