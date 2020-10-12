@@ -86,7 +86,6 @@ const Admin = (props) =>{
         api().post('/products/refreshProducts').then(resp => {   
             let apiProducts = resp.data.data;
             setProducts(apiProducts);
-            console.log(apiProducts)
         }).catch(err=>console.log("Cannot get products.",err))
     }
 

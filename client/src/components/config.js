@@ -41,6 +41,11 @@ const Config = (props) =>{
         textAlign: "left"
     }
 
+    const divStyle2 = {
+        fontSize: "20px",
+        color: "white"
+    }
+
     const feedbackStyle = {
         maxWidth: "250px",
         display: "block"
@@ -88,10 +93,6 @@ const Config = (props) =>{
                         let minBuySize = Number(config.product.base_min_size);
                         let tempMinBuyAmt = 10 > (marketPrice * minBuySize) ? 10 : (marketPrice * minBuySize);
                         setMinBuyAmt(tempMinBuyAmt);
-                        console.log("Market Price: ",marketPrice);
-                        console.log("Min Buy Size: ",minBuySize);
-                        console.log("Min Buy $$$: ",marketPrice*minBuySize);
-                        console.log("============")
                     }).catch(err=>console.log("Unable to get marketprice.",err))
                     setBotEnabled(config.botEnabled);
                     setCronValue(config.cronValue);
@@ -172,12 +173,24 @@ const Config = (props) =>{
             newArr.reduce((data, byte) => data + String.fromCharCode(byte), '')
         );
     }
+
+    const noConfigs = (
+        <div style={divStyle2}>
+            <br /><br />
+            To get started, please select some products from the <a href="/admin">admin page</a>.
+        </div>
+    )
     const getProductOptions = () => {
         api().get('/profile/getAllActiveConfigs').then((resp) => {
             if(!!resp.data.data){ // In case no data exists in DB
                 let allConfigs = resp.data.data;
                 let options = [];
                 let convertedImg;
+                if(allConfigs.length===0){
+                    setProductOptions(options);
+                    setIsFetching(0);
+
+                }
                 allConfigs.forEach(c=>{
                     if(c.icon){
                         convertedImg = "data:image/png;base64,"+toBase64(c.icon.data.data);
@@ -489,7 +502,7 @@ const Config = (props) =>{
 
     let spinner = (<div className="loader">Loading...</div>)
 
-  return isFetching ? spinner : configLayout;
+  return isFetching ? spinner : productOptions.length===0 ? noConfigs : configLayout;
 
 }
 

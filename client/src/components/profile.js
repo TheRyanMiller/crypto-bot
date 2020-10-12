@@ -25,14 +25,13 @@ const Profile = (props) =>{
     },[])
 
     useEffect(() =>{
-      console.log(updateData);
+      //
     },[updateData])
 
     const checkDatabaseForUsers = () => {
         api().get('/users/getCurrentUser').then((resp) => {
             //if no users exist, route to /register
                 let num = resp.data.user;
-                console.log("NUMBER OF USERS FOUND: ",resp.data)
                 setEmail(resp.data.email)
             if(num === 0) {
                 setShowSpinner(false);
