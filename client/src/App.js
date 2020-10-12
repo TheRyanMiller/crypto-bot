@@ -88,7 +88,7 @@ function App() {
     return (
       <>
         <Config 
-          selectedProduct={selectedProduct} 
+          selectedProduct={selectedProduct}
           handleNewProductSelect={handleNewProductSelect} />
       </>
     )

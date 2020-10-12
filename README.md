@@ -10,9 +10,9 @@ For example, using Crypto-bot enables:
 
 ## Security
 Please use at your own risk, and never share your API keys.
-- Crypto-bot utilizes JSON Web Token (JWT) to secure interactions between the application front-end and back-end services. 
-- Coinbase Pro API keys are stored encrypted (AES-256-CBC) in the MongoDB database and never exposed back to user/front-end.
-- User sessions expire every 60 minutes (based on JWT / Access Token expiration)
+- Crypto-bot utilizes JSON Web Tokens (JWT) to secure all API interactions. 
+- Coinbase Pro API keys are stored encrypted (AES-256-CBC) and never exposed.
+- User sessions expire every 60 minutes (token expiration)
   
 
 <br />
@@ -51,3 +51,14 @@ $   ts-node server.js
 ```
 $   npm run
 ```
+  
+  
+## FAQ
+Q: *How is the minimum buy amount determined?*  
+A: Each product (cryptocurrency) listed on Coinbase Pro has a `base_min_size` defined, which is the smalled unit of that that crypto currency that can be bought/sold in a transaction.
+
+Q: *Does Crypto-bot allow selling?*  
+A: No. This tool is strictly for dollar cost averaging into crypto. No current plans to add selling fucntionality.
+
+Q: *Can I automatically add funds from my bank?*  
+A: Currently there is no way to tranfser funds from your bank account using the Coinbase Pro API. However, it does allow transfer of funds from Coinbase --> Coinbase Pro. In a future release of Crypto-bot, it will be possible to fund your Coinbase Pro account with USDC that's been automatically transferred using Coinbase regularly scheduled buys (USDC-only, because it is fee-free throughout Coinbase platform).

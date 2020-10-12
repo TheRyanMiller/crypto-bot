@@ -26,7 +26,10 @@ const Admin = (props) =>{
         getProducts();
         api().get('/profile/getCrons').then((resp) => {
             setActiveCrons(resp.data.data);
-        }).catch(err=>console.log("Cannot get logs.",err))
+        }).catch(err=>console.log("Cannot get logs.",err));
+        api().post('/profile/addIcon').then(resp=>{
+            console.log("Icons added.")
+        }).catch(err=>console.log("Error adding icons.",err));
     },[])
 
     useEffect(()=>{
@@ -83,6 +86,7 @@ const Admin = (props) =>{
         api().post('/products/refreshProducts').then(resp => {   
             let apiProducts = resp.data.data;
             setProducts(apiProducts);
+            console.log(apiProducts)
         }).catch(err=>console.log("Cannot get products.",err))
     }
 

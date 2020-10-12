@@ -31,6 +31,7 @@ const Config = (props) =>{
     const [showDatesModal, setShowDatesModal] = useState(false);
     const [productOptions, setProductOptions] = useState([]);
     const [defaultOption, setDefaultOption] = useState("");
+    const [minBuyAmt, setMinBuyAmt] = useState(0)
 
     let minBuySize = 10;
 
@@ -81,6 +82,17 @@ const Config = (props) =>{
             api().get('/profile/getConfig',{ params: {product:productid}}).then((resp) => {
                 if(!!resp.data.data){ // In case no data exists in DB
                     let config = resp.data.data;
+                    api().get('/coinbase/getMarketPrice', { params: { productId : productid } }).then((resp) => {
+                        console.log("============")
+                        let marketPrice = Number(resp.data.data);
+                        let minBuySize = Number(config.product.base_min_size);
+                        let tempMinBuyAmt = 10 > (marketPrice * minBuySize) ? 10 : (marketPrice * minBuySize);
+                        setMinBuyAmt(tempMinBuyAmt);
+                        console.log("Market Price: ",marketPrice);
+                        console.log("Min Buy Size: ",minBuySize);
+                        console.log("Min Buy $$$: ",marketPrice*minBuySize);
+                        console.log("============")
+                    }).catch(err=>console.log("Unable to get marketprice.",err))
                     setBotEnabled(config.botEnabled);
                     setCronValue(config.cronValue);
                     setBuySize(config.buySize);
@@ -299,8 +311,8 @@ const Config = (props) =>{
                     const errors = {};
                     var numbers = /^\d*(\.\d+)?$/;
                     //!values.buySize.match(numbers) || 
-                    if (!values.buySize.toString().match(numbers) || values.buySize < minBuySize){
-                        errors.buySize = "Numbers only. Must be greater than $"+minBuySize+"."
+                    if (!values.buySize.toString().match(numbers) || values.buySize < Number(minBuyAmt).toFixed(2)){
+                        errors.buySize = "Numbers only. Must be greater than $"+Number(minBuyAmt).toFixed(2)+"."
                     }
                     if (!values.limitOrderDiff.toString().match(numbers) || values.limitOrderDiff <= 0){
                         errors.limitOrderDiff = "Numbers only. Must be greater than 0%"

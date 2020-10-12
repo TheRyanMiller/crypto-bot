@@ -7,10 +7,11 @@ exports.refreshAvailableProducts = (req, res) => {
     let config;
     Config.model.find({email: req.jwt.user.email}).then(results=>{
         configs = results;
-        res.status(200).send({data: configs});  
     })
     require('../../coinbase/scripts/getProducts.ts')().then(products=>{
         let counter = 0;
+        let configSavePromises = [];
+        let mycount = 0;
         let currencyArray = process.env.BASE_CURRENCY.split(",");
         products.forEach(p=>{
             if(currencyArray.includes(p.quote_currency)){
@@ -28,9 +29,11 @@ exports.refreshAvailableProducts = (req, res) => {
                         isAvailable: true,
                         isDefault: counter==0
                     })
-                    config.save().then(res=>{
-                        //
-                    }).catch(err => console.log(err))
+                    mycount++;
+                    configSavePromises.push(config.save())
+                    // config.save().then(res=>{
+                    //     //
+                    // }).catch(err => console.log(err))
                 }
                 for(let i=0;i<configs.length;i++){
                     //if there is a match already
@@ -52,14 +55,32 @@ exports.refreshAvailableProducts = (req, res) => {
                             isAvailable: true,
                             isDefault: false
                         })
-                        config.save().then(res=>{
-                            //
-                        }).catch(err => console.log(err))
+                        mycount++;
+                        configSavePromises.push(config.save())
+                        // config.save().then(res=>{
+                        //     //
+                        // }).catch(err => console.log(err))
                     }
                 }
                 counter++;
             }
-        })      
+        })
+        console.log(mycount)
+        console.log("EXECUTING "+configSavePromises.length+" PROMISES")
+        Promise.all(configSavePromises).then((resp)=>{
+            if(configs.length===0){
+                res.status(200).send({data: resp});
+            }
+            else{
+                res.status(200).send({data: configs});
+                console.log("SUCCESS!!!");
+            }
+            
+        }).catch(function(err) {
+            // log that I have an error, return the entire array;
+            console.log("ERROR!!!",err)
+            res.status(500).send({data: configs});  
+        })
     })
 };
 

@@ -84,10 +84,10 @@ const Profile = (props) =>{
         <div>
             <Form validated={validated} onSubmit={handleSubmit}>
                 <FormGroup controlId="userinfo">
-                <Form.Label>Enable Alert Emails</Form.Label><br />
+                <Form.Label>Enable Email Alerts</Form.Label><br />
                 <Switch checked={enableEmailAlerts} onChange={(el, state) => setEnableEmailAlerts(!enableEmailAlerts)} name='test' />
                 <br /><br />
-                <Form.Label>Old Password</Form.Label>
+                {/* <Form.Label>Old Password</Form.Label>
                 <FormControl
                     disabled
                     value={password}
@@ -146,7 +146,7 @@ const Profile = (props) =>{
                         type="text"
                     />
                     <br /><a style={{color:"white"}} href="#">More info</a>
-                </div>
+                </div> */}
                 </FormGroup>
                 <Button block disabled={false} type="submit">
                 Save

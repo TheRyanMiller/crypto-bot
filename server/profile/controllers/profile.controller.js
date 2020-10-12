@@ -91,20 +91,19 @@ exports.addIcon = (req, res) => {
     let numConfigs = 0;
     let fileStr = path.dirname(require.main.filename)+"/node_modules/cryptocurrency-icons/32/color/";
 
-    Config.model.find({}).then((data,err) => {
+    Config.model.find({email: req.jwt.user.email}).then((data,err) => {
+        // Script to add icons for each of a user's configs.
         if (err) return res.json({ success: false, error: err });
         numConfigs = data.length;
         data.forEach(c => {
             ticker = c.product.base_currency.toLowerCase();
             tickers.push(c.product.base_currency.toLowerCase());
-            
                 fs.readFile(fileStr+ticker+".png", (err, img)=>{
                     try{
                         if(err) throw "cannot find ticker"
                         query = {id: c.id, email: c.email};
                         set = {$set: { icon:  {data: img, contentType: "image/png"}}};
                         Config.model.findOneAndUpdate(query, set).then((data,err) => {
-                            console.log(count++, numConfigs-1);
                             if (err) return res.json({ success: false, error: err });
                             if(count===numConfigs-1) return res.json({ success: true });
                         })
@@ -116,7 +115,6 @@ exports.addIcon = (req, res) => {
                             query = {id: c.id, email: c.email};
                             set = {$set: { icon:  {data: img, contentType: "image/png"}}};
                             Config.model.findOneAndUpdate(query, set).then((data,err) => {
-                                console.log(count++, numConfigs-1);
                                 if (err) return res.json({ success: false, error: err });
                                 if(count===numConfigs-1) return res.json({ success: true });
                             })
