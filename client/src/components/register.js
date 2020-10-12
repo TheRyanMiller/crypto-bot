@@ -24,18 +24,7 @@ const Register = (props) =>{
 
     const checkDatabaseForUsers = () => {
         if(localStorage.getItem("jwt-access-token")) window.location.href="/";
-        // api().get('/users/count').then((resp) => {
-        //     //if no users exist, route to /register
-        //         let userCount = resp.data.data;
-        //         console.log("NUMBER OF USERS FOUND: ",resp.data)
-        //     if(userCount === 0) {
-        //         setShowSpinner(false);
-        //     }
-        //     else{
-        //         //window.location.href="/";
-        //         setShowSpinner(false);
-        //     }
-        // }).catch(err => console.log("Unable to get user count.",err))
+        setShowSpinner(false);
     }
     
     const handleSubmit = (event) => {

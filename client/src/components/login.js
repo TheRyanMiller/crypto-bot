@@ -30,7 +30,7 @@ const Login = (props) =>{
   }
 
   function validateForm() {
-    console.log("Run some validation")
+    //
   }
 
   const divStyle = {
