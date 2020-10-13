@@ -76,7 +76,7 @@ function App() {
   const getAccountBalances = () => {
     if(localStorage.getItem("jwt-access-token")){
       api().get('/coinbase/getAccountBalances').then((resp) => {
-        setAcctBalances(resp.data.data);
+        //setAcctBalances(resp.data.data);
       }).catch(err=>console.log("Unable to get account balances.",err))
     }
   }

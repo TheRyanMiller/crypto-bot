@@ -8,6 +8,7 @@ import '../styles/spinner.css';
 
 const Register = (props) =>{
     const [validated, setValidated] = useState(false);
+    const [keysChecked, setKeysChecked] = useState(false);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,10 +18,17 @@ const Register = (props) =>{
     const [showSpinner, setShowSpinner] = useState(true);
     const [enableEmailAlerts, setEnableEmailAlerts] = useState(true);
     const [registrationSuccessful, setRegistrationSuccessful] = useState(false);
+    const [apiKeysValid, setApiKeysValid] = useState(false);
 
     useEffect(() =>{
         checkDatabaseForUsers();
     },[])
+
+    useEffect(() =>{
+        // Enable submit button
+        // Diable
+        // Show green check mark
+    },[apiKeysValid])
 
     const checkDatabaseForUsers = () => {
         if(localStorage.getItem("jwt-access-token")) window.location.href="/";
@@ -28,8 +36,9 @@ const Register = (props) =>{
     }
     
     const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log(validated);
+        console.log("==========")
+        console.log(validated)
+        console.log("==========")
         if(validateForm()){
             api().post('/users', {email, password, enableEmailAlerts, cbpKey, cbpSecret, cbpPassphrase}).then((resp) => {   
                 console.log(resp);
@@ -37,6 +46,17 @@ const Register = (props) =>{
                 setTimeout(() => {  window.location.href="/"; }, 2000);
             }).catch(err=>console.log("Cannot send auth request.",err))
         }
+    }
+
+    const validateApiKeys = () => {
+        api().post('/coinbase/checkApiKeys',{cbpKey, cbpSecret, cbpPassphrase}).then(res=>{
+            setKeysChecked(true);
+            if(res.data.data.success) setApiKeysValid(true);
+            if(!res.data.data.success) setApiKeysValid(false);
+        }).catch(err=>{
+            console.log(err);
+            setApiKeysValid(false);
+        })
     }
 
     const divStyle = {
@@ -47,14 +67,19 @@ const Register = (props) =>{
         textAlign: "center"
     }
 
+    // let const keyEntryHandler = (value, attrib) =>{
+                
+    // }
+
     function validateForm() {
-        console.log("Running form check...")
         let valid = false;
-        if(email.length > 0 &&
+        if(name.length > 0 &&
+            email.length > 0 &&
             password.length > 0 &&
             cbpKey.length > 0 && 
             cbpPassphrase.length > 0 && 
-            cbpKey.length > 0
+            cbpKey.length > 0 &&
+            apiKeysValid
         ) {
             setValidated(true);
             return true;
@@ -67,16 +92,17 @@ const Register = (props) =>{
 
     let register = ( 
         <div className="register">
-            <Form validated={validated} onSubmit={handleSubmit}>
+            <Form>
                 <div className="centerFlex" > 
                     <p style={divStyle}>Already have an account? <a href="/login">Login here.</a></p>
                 </div>
+                <br />
                 <FormGroup controlId="userinfo">
-                <Form.Label>Name</Form.Label>
+                <Form.Label>Full Name</Form.Label>
                 <FormControl
                     autoFocus
                     required
-                    type="name"
+                    type="fullname"
                     value={name}
                     onChange={e => {
                         setName(e.target.value)
@@ -111,42 +137,57 @@ const Register = (props) =>{
                 <FormGroup controlId="cbp">
                 <div><hr /></div>
                 <div className="cbp">
-                    <Form.Label>Coinbase Pro Key</Form.Label>
+                    <h5>Coinbase Pro API Keys</h5>
+                    <a style={{color:"white"}} href="#">More info</a><br /><br />
+                    <Form.Label>Key</Form.Label>
                     <FormControl
-                        value={cbpKey}
                         required
+                        value={cbpKey}
+                        disabled={apiKeysValid}
                         onChange={e => {
                             setCbpKey(e.target.value);
                             validateForm();
                         }}
-                        type="text"
+                        type="password"
                     />
-                    <Form.Label>Coinbase Pro Secret</Form.Label>
+                    <Form.Label>Secret</Form.Label>
                     <FormControl
                         value={cbpSecret}
+                        disabled={apiKeysValid}
                         required
                         onChange={e => {
                             setCbpSecret(e.target.value);
                             validateForm();
                         }}
-                        type="text"
+                        type="password"
                     />
-                    <Form.Label>Coinbase Pro Passphrase</Form.Label>
+                    <Form.Label>Passphrase</Form.Label>
                     <FormControl
                         value={cbpPassphrase}
                         required
+                        disabled={apiKeysValid}
                         onChange={e => {
                             setCbpPassphrase(e.target.value);
                             validateForm();
                         }}
-                        type="text"
+                        type="password"
                     />
-                    <br /><a style={{color:"white"}} href="#">More info</a>
+                    <br />
+                    {keysChecked ? (apiKeysValid ? <p >Keys validated! ✅</p> : <p>Invalid keys! ⚠</p>) : ""}
                 </div>
                 </FormGroup>
-                <Button block disabled={false} type="submit">
-                Register
-                </Button><br />
+                <div>
+                    {apiKeysValid ? 
+                        <Button block disabled={!apiKeysValid} onClick={handleSubmit}>
+                        Register
+                        </Button> :
+                        <Button className="btn btn-dark btn-outline-secondary" block disabled={apiKeysValid} onClick={()=>validateApiKeys()}>
+                        Validate Keys
+                        </Button>
+                    }
+                    
+                </div>
+                <br />
                 
             </Form>
         </div>

@@ -41,6 +41,23 @@ exports.getFills = (req, res) => {
     });
 };
 
+exports.checkApiKeys = (req, res) => {
+    require('../scripts/checkApiKeys.ts')(req.body.cbpKey, req.body.cbpSecret, req.body.cbpPassphrase).then(data=>{
+        let keyInfo = {};
+        keyInfo.code = data;
+        keyInfo.success = false;
+        keyInfo.message = "Keys are valid.";
+        if(data===400) keyInfo.success = true;
+        if(data===401) keyInfo.message = "Keys are invalid."
+        if(data===403) keyInfo.message = "Keys do not have trade permissions."
+        res.json({ success: true, data: keyInfo });
+    })
+    .catch(err=>{
+        console.log(err)
+        return res.json({ success: false, error: err });
+    });
+};
+
 exports.getKeys = (req, res, next) => {
     UserModel.findByEmail(req.jwt.user.email).then(result => {
         let user;

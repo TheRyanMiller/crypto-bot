@@ -38,4 +38,8 @@ exports.routesConfig = function (app) {
         CoinbaseController.getKeys,
         CoinbaseController.syncOrders
     ]);
+
+    app.post('/coinbase/checkApiKeys', [
+        CoinbaseController.checkApiKeys
+    ]);
 };
