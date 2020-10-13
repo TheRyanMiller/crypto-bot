@@ -45,7 +45,6 @@ const Login = (props) =>{
     event.preventDefault();
     api().post('/auth', {email, password}).then((resp) => {   
         setServerReply(JSON.stringify(resp, null, 4));
-        console.log(resp)
         if(resp.data.accessToken && resp.data.refreshToken){
           localStorage.setItem("jwt-access-token",resp.data.accessToken) // write to local storage
           localStorage.setItem("jwt-refresh-token",resp.data.refreshToken) // write to local storage

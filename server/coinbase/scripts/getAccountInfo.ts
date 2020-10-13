@@ -11,5 +11,5 @@ module.exports = (keys: ApiKey) => new Promise((resolve,reject)=>{
         resolve({
             data: resp[Object.keys(resp)[0]]
         }) 
-    })
+    }).catch(err=>reject(err));
 })

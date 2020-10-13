@@ -186,12 +186,14 @@ const Config = (props) =>{
                 let allConfigs = resp.data.data;
                 let options = [];
                 let convertedImg;
+                setIsFetching(false);
                 if(allConfigs.length===0){
                     setProductOptions(options);
-                    setIsFetching(0);
-
                 }
+                let count = 0;
+                let defaultExists = false;
                 allConfigs.forEach(c=>{
+                    count++;
                     if(c.icon){
                         convertedImg = "data:image/png;base64,"+toBase64(c.icon.data.data);
                     }
@@ -200,10 +202,11 @@ const Config = (props) =>{
                     }
                     options.push({value:c, label:c.id, icon:convertedImg});
                     if(c && c.isDefault && c.isDefault===true){
+                        defaultExists=true;
                         console.log("CID",c.id)
                         setDefaultOption(c);
                     } 
-                    
+                    if(!defaultExists && allConfigs.length === count) setDefaultOption(c);
                 })
                 setProductOptions(options);
             }
