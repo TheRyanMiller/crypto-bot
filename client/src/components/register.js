@@ -36,9 +36,6 @@ const Register = (props) =>{
     }
     
     const handleSubmit = (event) => {
-        console.log("==========")
-        console.log(validated)
-        console.log("==========")
         if(validateForm()){
             api().post('/users', {email, password, enableEmailAlerts, cbpKey, cbpSecret, cbpPassphrase}).then((resp) => {   
                 console.log(resp);

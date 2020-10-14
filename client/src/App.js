@@ -24,7 +24,6 @@ function App() {
   useEffect(() =>{
     if(localStorage.getItem("jwt-access-token")){
       api().get('/profile/getAllActiveConfigs').then((resp) => {
-        console.log(resp)
         if(!!resp.data.data){ // In case no data exists in DB
             let allConfigs = resp.data.data;
             let products = [];
@@ -76,7 +75,7 @@ function App() {
   const getAccountBalances = () => {
     if(localStorage.getItem("jwt-access-token")){
       api().get('/coinbase/getAccountBalances').then((resp) => {
-        //setAcctBalances(resp.data.data);
+        setAcctBalances(resp.data.data);
       }).catch(err=>console.log("Unable to get account balances.",err))
     }
   }

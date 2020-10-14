@@ -25,14 +25,19 @@ const Profile = (props) =>{
     },[])
 
     useEffect(() =>{
-      //
-    },[updateData])
+        let data = {};
+        data.enableEmailAlerts = enableEmailAlerts;
+        api().post('/users/updateByEmail',{data}).then((resp) => {
+
+        }).catch(err => console.log("Unable to get user count.",err))
+    },[enableEmailAlerts])
 
     const checkDatabaseForUsers = () => {
         api().get('/users/getCurrentUser').then((resp) => {
             //if no users exist, route to /register
                 let num = resp.data.user;
-                setEmail(resp.data.email)
+                setEmail(resp.data.email);
+                setEnableEmailAlerts(resp.data.enableEmailAlerts);
             if(num === 0) {
                 setShowSpinner(false);
             }
@@ -147,9 +152,9 @@ const Profile = (props) =>{
                     <br /><a style={{color:"white"}} href="#">More info</a>
                 </div> */}
                 </FormGroup>
-                <Button block disabled={false} type="submit">
+                {/* <Button block disabled={false} type="submit">
                 Save
-                </Button><br />
+                </Button><br /> */}
                 <div type="button" className="btn btn-outline-secondary" onClick={()=>handleLogout()}>Logout</div>
 
             </Form>

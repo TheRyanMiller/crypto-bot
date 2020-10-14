@@ -21,9 +21,9 @@ exports.routesConfig = function (app) {
         ValidationMiddleware.validJWTNeeded,
         UsersController.getByEmail
     ]);
-    app.patch('/users/:userId', [
+    app.post('/users/updateByEmail', [
         ValidationMiddleware.validJWTNeeded,
-        UsersController.patchById
+        UsersController.updateByEmail
     ]);
     app.delete('/users/:userId', [
         ValidationMiddleware.validJWTNeeded,

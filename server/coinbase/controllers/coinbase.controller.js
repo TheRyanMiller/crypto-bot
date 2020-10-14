@@ -101,6 +101,7 @@ exports.getAccountBalances = (req, res) => {
                 console.log(err)
             }
         })
+        
         return res.json({ success: true, data: balances })
     })
     .catch(err=>{

@@ -116,6 +116,19 @@ exports.patchCbpData = (email, userData) => {
 
 };
 
+exports.updateByEmail = (email, data) =>{
+    return new Promise((resolve, reject) => {
+        let query = {email};
+        User.findOneAndUpdate(query,
+            { $set: {
+                enableEmailAlerts: data.enableEmailAlerts
+            }},
+            (err, res)=>{
+                if(err) reject(err);
+                resolve(res);
+        })
+    });
+}
 exports.removeById = (userId) => {
     return new Promise((resolve, reject) => {
         User.remove({_id: userId}, (err) => {

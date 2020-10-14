@@ -115,35 +115,39 @@ exports.getCbpKeys = (email) => new Promise(function(resolve, reject) {
         });
 });
 
-exports.patchById = (req, res) => {
+exports.updateByEmail = (req, res) => {
     let email = req.jwt.user.email;
-    let patchType = "cbpData";
+    let data = req.body.data;
+    UserModel.updateByEmail(email, data)
+        .then((result) => {
+            res.status(200).send(result);
+        });
+}
     //patch types
     // 1. cbp data
     // 2. Email
     // 3. Password
-    const algorithm = 'aes-256-cbc';
-    const key = crypto.randomBytes(32);
-    const iv = crypto.randomBytes(16);
-    console.log("KEY",req.body.updateData.cbpKey)
-    let encrypted = encrypt(req.body.updateData.cbpKey,key,iv)
-    console.log("EKEY",encrypted);
-    let decrypted = decrypt(encrypted,key,iv);
-    console.log("DKEY",decrypted);
-    if (req.body.password) {
-        let salt = crypto.randomBytes(16).toString('base64');
-        let hash = crypto.createHmac('sha512', salt).update(req.body.password).digest("base64");
-        req.body.password = salt + "$" + hash;
-    }
+    // const algorithm = 'aes-256-cbc';
+    // const key = crypto.randomBytes(32);
+    // const iv = crypto.randomBytes(16);
+    // console.log("KEY",req.body.updateData.cbpKey)
+    // let encrypted = encrypt(req.body.updateData.cbpKey,key,iv)
+    // console.log("EKEY",encrypted);
+    // let decrypted = decrypt(encrypted,key,iv);
+    // console.log("DKEY",decrypted);
+    // if (req.body.password) {
+    //     let salt = crypto.randomBytes(16).toString('base64');
+    //     let hash = crypto.createHmac('sha512', salt).update(req.body.password).digest("base64");
+    //     req.body.password = salt + "$" + hash;
+    // }
 
-    if(patchType==="cbpData"){
-    UserModel.patchCbpData(email, req.body.updateData)
-        .then((result) => {
-            console.log(result)
-            res.status(204).send({});
-        });
-    }
-};
+    // if(patchType==="cbpData"){
+    // UserModel.patchCbpData(email, req.body.updateData)
+    //     .then((result) => {
+    //         console.log(result)
+    //         res.status(204).send({});
+    //     });
+    // }
 
 exports.removeById = (req, res) => {
     UserModel.removeById(req.params.userId)

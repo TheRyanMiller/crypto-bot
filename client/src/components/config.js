@@ -88,7 +88,6 @@ const Config = (props) =>{
                 if(!!resp.data.data){ // In case no data exists in DB
                     let config = resp.data.data;
                     api().get('/coinbase/getMarketPrice', { params: { productId : productid } }).then((resp) => {
-                        console.log("============")
                         let marketPrice = Number(resp.data.data);
                         let minBuySize = Number(config.product.base_min_size);
                         let tempMinBuyAmt = 10 > (marketPrice * minBuySize) ? 10 : (marketPrice * minBuySize);
@@ -203,7 +202,6 @@ const Config = (props) =>{
                     options.push({value:c, label:c.id, icon:convertedImg});
                     if(c && c.isDefault && c.isDefault===true){
                         defaultExists=true;
-                        console.log("CID",c.id)
                         setDefaultOption(c);
                     } 
                     if(!defaultExists && allConfigs.length === count) setDefaultOption(c);
