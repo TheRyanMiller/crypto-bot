@@ -42,20 +42,23 @@ userSchema.findById = function (cb) {
 
 const User = mongoose.model('Users', userSchema);
 
-exports.findByEmail = (email) => {
-    return User.find({email: email})
-    .then(result => {
-        let obj = {};
-        let users = [];
-        for (var i = 0 ; i < result.length; i++) {
-            obj = result[i].toJSON();
-            delete obj.__id;
-            delete result.__v;
-            users.push(obj);
-            obj = {};
-        }
-        return users;
-    });
+exports.findByEmail = (userEmail) => {
+    return new Promise((resolve, reject) => {
+        User.find({email:userEmail}).then(result => {
+            let obj = {};
+            let users = [];
+            for (var i = 0 ; i < result.length; i++) {
+                obj = result[i].toJSON();
+                delete obj.__id;
+                delete result.__v;
+                users.push(obj);
+                obj = {};
+            }
+            resolve(users);
+        }).catch(err=>{
+            reject(err);
+        });
+    })
 };
 
 exports.findById = (id) => {

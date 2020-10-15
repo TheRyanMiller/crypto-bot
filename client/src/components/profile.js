@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { withRouter } from "react-router-dom";
 import { Button, Form, FormGroup, FormControl } from "react-bootstrap";
 import { api } from "../apis/apiCalls";
@@ -19,32 +19,32 @@ const Profile = (props) =>{
     const [showSpinner, setShowSpinner] = useState(true);
     const [enableEmailAlerts, setEnableEmailAlerts] = useState(true);
     const [updateData, setUpdateData] = useState({});
+    const isFirstRun = useRef(true);
 
     useEffect(() =>{
         checkDatabaseForUsers();
     },[])
 
     useEffect(() =>{
-        let data = {};
-        data.enableEmailAlerts = enableEmailAlerts;
-        api().post('/users/updateByEmail',{data}).then((resp) => {
-
-        }).catch(err => console.log("Unable to get user count.",err))
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        else{
+            let data = {};
+            data.enableEmailAlerts = enableEmailAlerts;
+            api().post('/users/updateByEmail',{data}).then((resp) => {
+                
+            }).catch(err => console.log("Failed user data update.",err))
+        }
     },[enableEmailAlerts])
 
     const checkDatabaseForUsers = () => {
         api().get('/users/getCurrentUser').then((resp) => {
-            //if no users exist, route to /register
                 let num = resp.data.user;
                 setEmail(resp.data.email);
                 setEnableEmailAlerts(resp.data.enableEmailAlerts);
-            if(num === 0) {
                 setShowSpinner(false);
-            }
-            else{
-                //window.location.href="/";
-                setShowSpinner(false);
-            }
         }).catch(err => console.log("Unable to get user count.",err))
     }
     

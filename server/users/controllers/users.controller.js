@@ -45,31 +45,11 @@ exports.getById = (req, res) => {
 };
 
 exports.getByEmail = (req, res) => {
-    UserModel.findByEmail(req.params.email)
-        .then((result) => {
-            let user;
-            if(result && result.length > 0) {
-                user = result[0];
-                delete user.password;
-                delete user.id;
-                delete user._id;
-                delete user.cbpKey;
-                delete user.cbpSecret;
-                delete user.cbpPassphrase;
-                res.status(200).send(user);
-            }
-            res.status(200).send("No results found.");
-            
-        });
-};
-
-exports.getCurrentUser = (req, res) => {
     UserModel.findByEmail(req.jwt.user.email)
         .then((result) => {
             let user;
             if(result && result.length > 0) {
                 user = result[0];
-                console.log(user)
                 delete user.password;
                 delete user.id;
                 delete user._id;
@@ -79,9 +59,32 @@ exports.getCurrentUser = (req, res) => {
                 res.status(200).send(user);
             }
             else{
-                res.status(200).send("No results found.")
-            };
+                res.status(200).send("No results found."); 
+            }
         });
+};
+
+exports.getCurrentUser = (req, res) => {
+    UserModel.findByEmail(req.jwt.user.email).then((result) => {
+        let user;
+        console.log(result)
+        if(result && result.length > 0) {
+            user = result[0];
+            console.log(user)
+            delete user.password;
+            delete user.id;
+            delete user._id;
+            delete user.cbpKey;
+            delete user.cbpSecret;
+            delete user.cbpPassphrase;
+            res.status(200).send(user);
+        }
+        else{
+            res.status(200).send("No results found.");
+        };
+    }).catch(err=>{
+        res.status(500).send("No results found.");
+    });
 };
 
 exports.getUserByEmail = (email) => {

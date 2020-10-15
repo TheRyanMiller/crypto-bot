@@ -21,6 +21,10 @@ exports.routesConfig = function (app) {
         ValidationMiddleware.validJWTNeeded,
         UsersController.getByEmail
     ]);
+    app.get('/users/getCurrentUser', [
+        ValidationMiddleware.validJWTNeeded,
+        UsersController.getCurrentUser
+    ]);
     app.post('/users/updateByEmail', [
         ValidationMiddleware.validJWTNeeded,
         UsersController.updateByEmail
