@@ -46,8 +46,15 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
-// https.createServer({
-//   key: fs.readFileSync('./certs/server.key'),
-//   cert: fs.readFileSync('./certs/cert.pem')
-// }, app)
-app.listen(process.env.PORT || process.env.API_PORT, () => console.log(`LISTENING ON PORT ${process.env.PORT || process.env.API_PORT}`));
+//PROD
+if(process.env.PROD==="false"){
+  https.createServer({
+    key: fs.readFileSync(process.env.CERT_KEY_PATH),
+    cert: fs.readFileSync(process.env.CERT_PATH)
+  }, app).listen(process.env.PORT || process.env.API_PORT, () => console.log(`LISTENING ON PORT ${process.env.PORT || process.env.API_PORT}`));
+}
+
+//NOT PROD
+if(process.env.PROD==="false"){
+  app.listen(process.env.PORT || process.env.API_PORT, () => console.log(`LISTENING ON PORT ${process.env.PORT || process.env.API_PORT}`));
+}

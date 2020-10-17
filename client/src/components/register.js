@@ -100,6 +100,7 @@ const Register = (props) =>{
                     autoFocus
                     required
                     type="fullname"
+                    id="fullname"
                     value={name}
                     onChange={e => {
                         setName(e.target.value)
@@ -111,6 +112,7 @@ const Register = (props) =>{
                 <FormControl
                     type="email"
                     value={email}
+                    id="email"
                     required
                     onChange={e => {
                         setEmail(e.target.value)
@@ -122,6 +124,7 @@ const Register = (props) =>{
                 <FormControl
                     value={password}
                     required
+                    id="password"
                     onChange={e => {
                         setPassword(e.target.value);
                         validateForm();
@@ -139,6 +142,7 @@ const Register = (props) =>{
                     <Form.Label>Key</Form.Label>
                     <FormControl
                         required
+                        id="cbpKey"
                         value={cbpKey}
                         disabled={apiKeysValid}
                         onChange={e => {
@@ -150,6 +154,7 @@ const Register = (props) =>{
                     <Form.Label>Secret</Form.Label>
                     <FormControl
                         value={cbpSecret}
+                        id="cbpSecret"
                         disabled={apiKeysValid}
                         required
                         onChange={e => {
@@ -162,6 +167,7 @@ const Register = (props) =>{
                     <FormControl
                         value={cbpPassphrase}
                         required
+                        id="cbpPassphrase"
                         disabled={apiKeysValid}
                         onChange={e => {
                             setCbpPassphrase(e.target.value);
