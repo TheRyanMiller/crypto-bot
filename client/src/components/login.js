@@ -41,7 +41,7 @@ const Login = (props) =>{
 
 
 
-  const handleSubmit = (event) => {
+  const handleSubmit = () => {
     api().post('/auth', {email, password}).then((resp) => {   
         setServerReply(JSON.stringify(resp, null, 4));
         if(resp.data.accessToken && resp.data.refreshToken){
@@ -65,6 +65,7 @@ const Login = (props) =>{
         <Form.Label>Email</Form.Label>
           <FormControl
             autoFocus
+            name="username"
             type="email"
             value={email}
             onChange={e => {
@@ -77,11 +78,12 @@ const Login = (props) =>{
         <Form.Label>Password</Form.Label>
           <FormControl
             value={password}
+            name="password"
+            type="password"
             onChange={e => {
               setPassword(e.target.value);
               validateForm();
             }}
-            type="password"
           />
         </FormGroup>
         <Button block disabled={false} onClick={()=>handleSubmit()}>

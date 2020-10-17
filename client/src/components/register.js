@@ -138,7 +138,7 @@ const Register = (props) =>{
                 <div><hr /></div>
                 <div className="cbp">
                     <h5>Coinbase Pro API Keys</h5>
-                    <a style={{color:"white"}} href="#">More info</a><br /><br />
+                    <a style={{color:"white"}} target="_blank" href="https://library.tradingtechnologies.com/user-setup/cb-creating-a-coinbase-api-key.html">More info</a><br /><br />
                     <Form.Label>Key</Form.Label>
                     <FormControl
                         required
