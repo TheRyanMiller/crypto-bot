@@ -42,18 +42,21 @@ const Login = (props) =>{
 
 
   const handleSubmit = () => {
-    api().post('/auth', {email, password}).then((resp) => {   
-        setServerReply(JSON.stringify(resp, null, 4));
-        if(resp.data.accessToken && resp.data.refreshToken){
-          localStorage.setItem("jwt-access-token",resp.data.accessToken) // write to local storage
-          localStorage.setItem("jwt-refresh-token",resp.data.refreshToken) // write to local storage
-          props.handleLogin(true);
-          history.push("/");
-        }
-        else{
-          props.handleLogin(false);
-        }
-    }).catch(err=>console.log("Cannot send auth request.",err))
+    if(email && email.length > 0 && password && password.length > 0){
+      api().post('/auth', {email, password}).then((resp) => {   
+          setServerReply(JSON.stringify(resp, null, 4));
+          if(resp.data.accessToken && resp.data.refreshToken){
+            localStorage.setItem("jwt-access-token",resp.data.accessToken) // write to local storage
+            localStorage.setItem("jwt-refresh-token",resp.data.refreshToken) // write to local storage
+            props.handleLogin(true);
+            history.push("/");
+          }
+          else{
+            props.handleLogin(false);
+          }
+      }).catch(err=>console.log("Cannot send auth request.",err))
+    }
+    else{console.log("Must enter credentials.")}
   }
 
   let spinner = (<div className="loader">Loading...</div>);
