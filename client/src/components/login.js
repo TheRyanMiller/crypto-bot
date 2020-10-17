@@ -42,7 +42,6 @@ const Login = (props) =>{
 
 
   const handleSubmit = (event) => {
-    event.preventDefault();
     api().post('/auth', {email, password}).then((resp) => {   
         setServerReply(JSON.stringify(resp, null, 4));
         if(resp.data.accessToken && resp.data.refreshToken){
@@ -85,7 +84,7 @@ const Login = (props) =>{
             type="password"
           />
         </FormGroup>
-        <Button block disabled={false} type="submit">
+        <Button block disabled={false} onClick={()=>handleSubmit()}>
           Login
         </Button><br />
         <div className="centerFlex" > 
