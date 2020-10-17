@@ -47,7 +47,7 @@ app.get("*", (req, res) => {
 });
 
 //PROD
-if(process.env.PROD==="false"){
+if(process.env.PROD==="true"){
   https.createServer({
     key: fs.readFileSync(process.env.CERT_KEY_PATH),
     cert: fs.readFileSync(process.env.CERT_PATH)

@@ -12,7 +12,7 @@ const options = {
     useUnifiedTopology: true
 };
 
-let dbString = process.env.MONGO_URL|| process.env.MONGO_URL_DEV;
+let dbString = process.env.MONGO_PROD_URL|| process.env.MONGO_URL_DEV;
 const connectWithRetry = () => {
     console.log('MongoDB connection with retry')
     mongoose.connect(dbString, options).then(()=>{
