@@ -48,6 +48,7 @@ app.get("*", (req, res) => {
 
 //PROD
 if(process.env.PROD==="true"){
+  console.log("Environment: Prod")
   https.createServer({
     key: fs.readFileSync(process.env.CERT_KEY_PATH),
     cert: fs.readFileSync(process.env.CERT_PATH)
@@ -56,5 +57,6 @@ if(process.env.PROD==="true"){
 
 //NOT PROD
 if(process.env.PROD==="false"){
+  console.log("Environment: Non-prod")
   app.listen(process.env.PORT || process.env.API_PORT, () => console.log(`LISTENING ON PORT ${process.env.PORT || process.env.API_PORT}`));
 }
