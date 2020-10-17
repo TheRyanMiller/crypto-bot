@@ -3,7 +3,7 @@ import axios from 'axios';
 const api = () => {
 
     //Setup axios instance
-    let baseUrl = window.location.href.substr(0,window.location.href.length-1);
+    let baseUrl = window.location.href.substr(0,window.location.href.lastIndexOf("/"));
     let port = window.location.port;
     if(port != ""){
         baseUrl = baseUrl.substr(0,baseUrl.indexOf(":"+port));
