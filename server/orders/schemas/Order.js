@@ -26,7 +26,7 @@ const OrderSchema = new Schema(
     settled: Boolean,
     fill_fees: String,
     filled_size: String,
-    exectued_value: String,
+    executed_value: String,
     fills: {
       type:[fill.schema],
       default: []
