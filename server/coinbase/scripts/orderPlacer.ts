@@ -66,7 +66,7 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
                 created_at: o.extra.created_at,
                 fill_fees: o.extra.fill_fees,
                 filled_size: o.extra.filled_size,
-                exectued_value: o.extra.exectued_value,
+                executed_value: o.extra.executed_value,
                 fills: []
             })
             myOrder.save((err: any)=>{
