@@ -11,9 +11,13 @@ exports.login = (req, res) => {
         let refreshId = req.body.userId + jwtSecret;
         let salt = crypto.randomBytes(16).toString('base64');
         let hash = crypto.createHmac('sha512', salt).update(refreshId).digest("base64");
-        req.body.refreshKey = salt;
         delete req.body.exp;
+        delete req.body.user.cbpKey;
+        delete req.body.user.cbpSecret;
+        delete req.body.user.cbpPassphrase;
+        delete req.body.user._id;
         let token = jwt.sign(req.body, jwtSecret, { expiresIn: jwt_life_in_seconds });
+        req.body.refreshKey = salt;
         let b = new Buffer(hash);
         let refresh_token = b.toString('base64');
         res.status(201).send({accessToken: token, refreshToken: refresh_token});

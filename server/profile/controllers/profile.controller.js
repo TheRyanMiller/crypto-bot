@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require("../../common/services/mongoose.service").mongoose;
 const Logger = require('../../common/services/logger');
+const UsersController = require('../../users/models/users.model');
 
 exports.listLogs = (req, res) => {
     let query = { email: req.jwt.user.email };
@@ -52,7 +53,6 @@ exports.saveConfig = (req, res) => {
     let options = {new: true, upsert: false, useFindAndModify: false};
     Config.model.findOneAndUpdate({id:config.id, email:config.email}, set, options, (err, data) => {
         if (err) return res.json({ success: false, error: err });
-        cron.kill();
         cron.set(config,null,req.jwt.user.email);
         let log = new Log.model({
             type: "Config change",
@@ -126,9 +126,19 @@ exports.addIcon = (req, res) => {
     })
 };
 
-exports.getCrons = (req, res) => {
-    let crons = cron.getAll();
-    return res.json({ success: true, data: crons })
+exports.getAllCrons = (req, res) => {
+    UsersController.findByEmail(req.jwt.user.email).then(users => {
+        if(users && users[0] && users[0].isAdmin){
+            let crons = cron.getAll();
+            res.json({ success: true, data: crons })
+        }
+        else{
+            return res.json({ success: false, data: "Insufficient Permissions" });
+        }        
+    }).catch(err=>{
+        return res.json({ success: false, data: "Error" });
+    })
+    
 };
 
 exports.getCronsByEmail = (req, res) => {

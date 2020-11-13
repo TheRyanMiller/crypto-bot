@@ -28,9 +28,14 @@ exports.routesConfig = function (app) {
         ProfileController.setActive
     ]);
 
-    app.get('/profile/getCrons', [
+    app.get('/profile/getCronsByEmail', [
         ValidationMiddleware.validJWTNeeded,
         ProfileController.getCronsByEmail
+    ]);
+
+    app.get('/profile/getAllCrons', [
+        ValidationMiddleware.validJWTNeeded,
+        ProfileController.getAllCrons
     ]);
 
     app.post('/profile/addIcon', [

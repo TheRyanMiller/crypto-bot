@@ -24,7 +24,7 @@ const Admin = (props) =>{
     useEffect(() =>{
         getLogs();
         getProducts();
-        api().get('/profile/getCrons').then((resp) => {
+        api().get('/profile/getCronsByEmail').then((resp) => {
             setActiveCrons(resp.data.data);
         }).catch(err=>console.log("Cannot get logs.",err));
         api().post('/profile/addIcon').then(resp=>{

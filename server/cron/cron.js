@@ -27,19 +27,13 @@ const initialize = exports.initialize = () =>{
     })
 }
 
-const kill = exports.kill = () => {
-    if(cronTask) {
-        cronTask.destroy();
-        console.log("Cron destroyd!")
-    }
-}
-
 const getAll = exports.getAll = () => {
     let tasklessCrons = [];
     let cronItem = {};
     cronArray.forEach(c=>{
         cronItem.id = c.id;
         cronItem.schedule = c.schedule;
+        cronItem.email = c.email;
         tasklessCrons.push(cronItem);
         cronItem = {};
     })
@@ -61,16 +55,31 @@ const getCronsByEmail = exports.getCronsByEmail = (email) => {
     return tasklessCrons;
 }
 
+/*
+    SET method takes in a single config and compares it to all existing configs (cronArray)
+    If config calls for ENABLED
+        Check for match in array based on email/id combo
+        IF found (already exists)
+            kill cron
+        Create cron
+    
+    If config calls for DISABLED
+        Check array for match based on email/id combo
+        If found (already exists)
+            kill cron
+*/
+
 const set = exports.set = (config) => {
     if(config.botEnabled){
         if(cron.validate(config.cronValue)){
             //Kill existing cron if one exists
             for(let i = cronArray.length-1; i>=0; i--){
-                if(cronArray[i].id == config.id) {
+                if(cronArray[i].id == config.id && cronArray[i].email == config.email) {
                     cronArray[i].task.destroy();
                     cronArray.splice(i,1);
                 }
             }
+            // Recreate cron
             newTask = cron.schedule(config.cronValue, () =>  {
                 UsersController.getCbpKeys(config.email).then(keys => {
                     placeOrder(config.id, config.limitOrderDiff, config.buySize, config.buyType, config.email, keys);
@@ -91,9 +100,9 @@ const set = exports.set = (config) => {
         }
     }
     else{
-        //Find cron task and kill it
+        //Find cron task and kill it, do not reset
         for(let i = cronArray.length-1; i>=0; i--){
-            if(cronArray[i].id == config.id) {
+            if(cronArray[i].id == config.id && cronArray[i].email == config.email) {
                 cronArray[i].task.destroy();
                 cronArray.splice(i,1);
                 //type, message, logLevel, data, email
@@ -101,9 +110,9 @@ const set = exports.set = (config) => {
             }
         }
         console.log("~~~CronArray has been Updated:")
-            cronArray.forEach(c=>{
-                console.log(c.id,c.schedule,c.task.getStatus())
-            })
+        cronArray.forEach(c=>{
+            console.log(c.id,c.schedule,c.task.getStatus())
+        })
         console.log("~~~")
     }
 }
