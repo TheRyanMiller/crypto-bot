@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 let placeOrder = require('../scripts/orderPlacer.ts');
 const UserModel = require('../../users/models/users.model');
+require('dotenv').config();
 
 exports.placeOrder = (req, res) => {
     let differential;

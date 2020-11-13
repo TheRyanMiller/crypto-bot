@@ -25,7 +25,12 @@ const Admin = (props) =>{
         getLogs();
         getProducts();
         api().get('/profile/getCronsByEmail').then((resp) => {
-            setActiveCrons(resp.data.data);
+            if(resp && resp.data && resp.data.data){
+                setActiveCrons(resp.data.data);
+            } 
+            else{
+                setActiveCrons([]);
+            }
         }).catch(err=>console.log("Cannot get logs.",err));
         api().post('/profile/addIcon').then(resp=>{
             console.log("Icons added.")
