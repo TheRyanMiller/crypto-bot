@@ -1,7 +1,6 @@
 const Log = require('../schemas/Log');
 const nodemailer = require('nodemailer');
 const User = require('../../users/models/users.model');
-
 require('dotenv').config();
 
 // API = type, message, logLevel, data, email
@@ -33,12 +32,14 @@ module.exports = (type, message, logLevel, data, email, isAdmin) => {
         if(err) console.log(err)
     })
 
-    // Email log
+    // Email log only when level is ERROR
     User.findByEmail(email).then(res=>{
         if(logLevel==="error" && res && res[0] && res[0].enableEmailAlerts){
             mailOptions.to = email;
-            mailOptions.subject = message;
+            mailOptions.cc = process.env.ADMIN_EMAIL;
+            mailOptions.subject = "["+process.env.SERVERNAME+"] "+message;
             mailOptions.text = message;
+            mailOptions.text += "\n\nServer Name: "+process.env.SERVERNAME;
             transporter.sendMail(mailOptions, function(error, info){
             if (error) {
                 console.log(error);

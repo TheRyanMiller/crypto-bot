@@ -34,7 +34,7 @@ const getAll = exports.getAll = () => {
         cronItem.id = c.id;
         cronItem.schedule = c.schedule;
         cronItem.email = c.email;
-        cronItem.task = c.task.status;
+        cronItem.status = c.task.status;
         tasklessCrons.push(cronItem);
         cronItem = {};
     })

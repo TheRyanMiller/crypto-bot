@@ -77,9 +77,11 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
             });
             
         }).catch(err=>{
-            console.log("Error placing order on CB.")
             let failedMessage = JSON.parse(err.response.body).message;
-            Logger("Failed Order", "Failed "+product+" order. "+failedMessage+".", "error", JSON.stringify, email);
+            let cbMessage = "Failed "+product+" order. "+failedMessage+".";
+            console.log("Error placing order on CB for "+email+" "+product);
+            console.log(failedMessage)
+            Logger("Failed Order", cbMessage, "error", cbMessage, email, false);
         })
     })
 }
