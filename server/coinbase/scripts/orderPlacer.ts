@@ -30,7 +30,7 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
             orderPrice = marketPrice;
         }
         
-        let sizeDecimalPrecision = countDecimals(product.base_increment);
+        let sizeDecimalPrecision = countDecimals(parseFloat(product.base_increment).toString());
         let size = (dollarAmt/orderPrice).toFixed(sizeDecimalPrecision);
 
         console.log("=============")
