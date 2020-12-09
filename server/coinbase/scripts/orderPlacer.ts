@@ -38,6 +38,8 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
         console.log("PASSING IN NUMBER FORM:",parseFloat(product.base_increment))
         console.log("Dollars:",dollarAmt);
         console.log("Order Price:",orderPrice);
+        console.log("Size Before:",size);
+        console.log("Decimal Precision:",sizeDecimalPrecision);
         console.log("FINALLY, HERE IS CALCULATED SIZE:",size);
         console.log("=============")
         
