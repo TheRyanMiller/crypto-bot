@@ -20,6 +20,7 @@ const initialize = exports.initialize = () =>{
         if(data){
             data.forEach(c => {
                 if(c.cronValue && c.botEnabled && c.email){
+                    console.log(c)
                     set(c);
                 }
             })
