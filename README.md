@@ -55,7 +55,7 @@ $   npm run
   
 ## FAQ
 Q: *How is the minimum buy amount determined?*  
-A: Each product (cryptocurrency) listed on Coinbase Pro has a `base_min_size` defined, which is the smalled unit of that that crypto currency that can be bought/sold in a transaction.
+A: Each product (cryptocurrency) listed on Coinbase Pro has a `base_min_size` defined, which is the smalled unit of that that crypto currency that can be bought/sold in a transaction. Keep in mind that there is also a `base_increment` size which defines the most precise level of precision (in terms of token size) which a buy can be made for. Any buys with a higher precision will be rejected. This bot will round any request to the nearest increment (e.g. a buy order for 1.005 LINK, will become a buy for 1.02 LINK). 
 
 Q: *Does Crypto-bot allow selling?*  
 A: No. This tool is strictly for dollar cost averaging into crypto. No current plans to add selling fucntionality.

@@ -8,10 +8,11 @@ const Order = require('../../orders/schemas/Order');
 import { BigJS } from 'coinbase-pro-trading-toolkit/build/src/lib/types';
 const Logger = require('../../../server/common/services/logger');
 import { ApiKey } from '../interfaces/keys';
+import { Product } from '../interfaces/product';
 
 require('dotenv').config();
 
-module.exports = (product: string, differential: number, dollarAmt: number, orderTypeInput: string, email: string, keys: ApiKey) => {
+module.exports = (product: Product, differential: number, dollarAmt: number, orderTypeInput: string, email: string, keys: ApiKey) => {
     let marketPrice: number;
     let buyDifferential: number = Number(differential/100); //convert differential from % to decimal    
     const coinbaseProConfig: CoinbaseProConfig = cbpConfig(keys);
@@ -19,16 +20,34 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
 
     const buildOrder = () => {
         let otype: OrderType;
-        if(orderTypeInput.toLowerCase()==='limit') otype = 'limit';
-        if(orderTypeInput.toLowerCase()==='market') otype = 'market';
-        let orderPrice: number = (marketPrice - (marketPrice * buyDifferential));
+        let orderPrice: number;
+        if(orderTypeInput.toLowerCase()==='limit'){
+            otype = 'limit';
+            orderPrice = (marketPrice - (marketPrice * buyDifferential));
+        }
+        if(orderTypeInput.toLowerCase()==='market'){
+            otype = 'market';
+            orderPrice = marketPrice;
+        }
+        
+        let sizeDecimalPrecision = countDecimals(product.base_increment);
+        let size = (dollarAmt/orderPrice).toFixed(sizeDecimalPrecision);
+
+        console.log("=============")
+        console.log("COUNTING DECIAMLS:",product.base_increment)
+        console.log("PASSING IN NUMBER FORM:",parseFloat(product.base_increment))
+        console.log("Dollars:",dollarAmt);
+        console.log("Order Price:",orderPrice);
+        console.log("FINALLY, HERE IS CALCULATED SIZE:",size);
+        console.log("=============")
+        
         let order: PlaceOrderMessage = {
             time: new Date(),
             type: 'placeOrder',
-            productId: product,
+            productId: product.id,
             clientId: null,
             price: orderPrice.toFixed(2),
-            size: (dollarAmt/orderPrice).toFixed(6),
+            size: size,
             side: 'buy',
             orderType: otype,
             postOnly: true
@@ -36,8 +55,8 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
         return order;
     }
 
-    coinbasePro.loadMidMarketPrice(product).then((price: BigJS) => {
-        console.log("Current "+product+" price is: "+(Number(price) - (Number(price) * buyDifferential)).toFixed(2));
+    coinbasePro.loadMidMarketPrice(product.id).then((price: BigJS) => {
+        console.log("Current "+product.id+" price is: "+(Number(price) - (Number(price) * buyDifferential)).toFixed(2));
         marketPrice = Number(price.toFixed(8));
     })
     .then(()=>{
@@ -72,17 +91,22 @@ module.exports = (product: string, differential: number, dollarAmt: number, orde
             myOrder.save((err: any)=>{
                 if(err) return console.log("Error writing new order data to mongodb.");
                 console.log(o.extra.type+" order placed, and successful write to local db.");
-                Logger("New "+product+" order placed", "New  "+product+" order has been placed: "+myOrder.id, "info", JSON.stringify(myOrder), email);
+                Logger("New "+product.id+" order placed", "New  "+product.id+" order has been placed: "+myOrder.id, "info", JSON.stringify(myOrder), email);
                 return;
             });
             
         }).catch(err=>{
             let failedMessage = JSON.parse(err.response.body).message;
-            let cbMessage = "Failed "+product+" order. "+failedMessage+".";
-            console.log("Error placing order on CB for "+email+" "+product);
+            let cbMessage = "Failed "+product.id+" order. "+failedMessage+".";
+            console.log("Error placing order on CB for "+email+" "+product.id);
             console.log(failedMessage)
             Logger("Failed Order", cbMessage, "error", cbMessage, email, false);
         })
     })
+}
+
+const countDecimals = function (value: string) {
+    if(Math.floor(Number(value)) === Number(value)) return 0;
+    return value.split(".")[1].length || 0; 
 }
 

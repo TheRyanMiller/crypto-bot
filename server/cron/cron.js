@@ -35,6 +35,7 @@ const getAll = exports.getAll = () => {
         cronItem.schedule = c.schedule;
         cronItem.email = c.email;
         cronItem.status = c.task.status;
+        cronItem.product = c.product;
         tasklessCrons.push(cronItem);
         cronItem = {};
     })
@@ -49,6 +50,7 @@ const getCronsByEmail = exports.getCronsByEmail = (email) => {
             cronItem.id = c.id;
             cronItem.schedule = c.schedule;
             cronItem.email = c.email;
+            cronItem.product = c.product;
             tasklessCrons.push(cronItem);
             cronItem = {};
         }
@@ -83,10 +85,10 @@ const set = exports.set = (config) => {
             // Recreate cron
             newTask = cron.schedule(config.cronValue, () =>  {
                 UsersController.getCbpKeys(config.email).then(keys => {
-                    placeOrder(config.id, config.limitOrderDiff, config.buySize, config.buyType, config.email, keys);
+                    placeOrder(config.product, config.limitOrderDiff, config.buySize, config.buyType, config.email, keys);
                 })
             });
-            cronArray.push({id: config.id, task: newTask, schedule: config.cronValue, email: config.email});
+            cronArray.push({id: config.id, task: newTask, schedule: config.cronValue, email: config.email, product: config.product});
             Logger("Crypto-bot enabled", "Crypto-bot enabled "+config.id+" with cron: "+config.cronValue,"info", config.cronValue, config.email, true);
             console.log("~~~CronArray has been Updated:")
             cronArray.forEach(c=>{
