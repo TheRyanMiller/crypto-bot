@@ -86,7 +86,7 @@ const set = exports.set = (config) => {
             // Recreate cron
             console.log("===== HERE IS THE PRODUCT VALUE ====")
             console.log(config.product)
-            console.log("=====")
+            console.log("=====");
             newTask = cron.schedule(config.cronValue, () =>  {
                 UsersController.getCbpKeys(config.email).then(keys => {
                     placeOrder(config.product, config.limitOrderDiff, config.buySize, config.buyType, config.email, keys);

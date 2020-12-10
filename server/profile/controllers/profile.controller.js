@@ -50,10 +50,13 @@ exports.saveConfig = (req, res) => {
             email: req.jwt.user.email
         }
     }
-    let options = {new: true, upsert: false, useFindAndModify: false};
+    let options = {new: true, upsert: false, useFindAndModify: false, returnNewDocument: true};
     Config.model.findOneAndUpdate({id:config.id, email:config.email}, set, options, (err, data) => {
         if (err) return res.json({ success: false, error: err });
-        cron.set(config,null,req.jwt.user.email);
+        console.log("~~~~~")
+        console.log(data)
+        console.log("~~~~~")
+        cron.set(data,null,req.jwt.user.email);
         let log = new Log.model({
             type: "Config change",
             message: "New config saved",

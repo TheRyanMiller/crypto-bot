@@ -109,6 +109,7 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
 
 const countDecimals = function (value: string) {
     if(Math.floor(Number(value)) === Number(value)) return 0;
-    return value.split(".")[1].length || 0; 
+    if(value.split(".")[1]) return value.split(".")[1].length || 0; 
+    return 0; 
 }
 
