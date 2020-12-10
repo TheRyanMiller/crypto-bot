@@ -32,16 +32,6 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
         
         let sizeDecimalPrecision = countDecimals(parseFloat(product.base_increment).toString());
         let size = (dollarAmt/orderPrice).toFixed(sizeDecimalPrecision);
-
-        console.log("=============")
-        console.log("COUNTING DECIAMLS:",product.base_increment)
-        console.log("PASSING IN NUMBER FORM:",parseFloat(product.base_increment))
-        console.log("Dollars:",dollarAmt);
-        console.log("Order Price:",orderPrice);
-        console.log("Size Before:",size);
-        console.log("Decimal Precision:",sizeDecimalPrecision);
-        console.log("FINALLY, HERE IS CALCULATED SIZE:",size);
-        console.log("=============")
         
         let order: PlaceOrderMessage = {
             time: new Date(),
