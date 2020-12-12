@@ -30,8 +30,18 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
             orderPrice = marketPrice;
         }
         
-        let sizeDecimalPrecision = countDecimals(parseFloat(product.base_increment).toString());
+        let sizeDecimalPrecision = countDecimals(product.base_increment.match(/^-?\d*\.?0*\d{0,1}/)[0]);
         let size = (dollarAmt/orderPrice).toFixed(sizeDecimalPrecision);
+
+        console.log("=============")	
+        console.log("COUNTING DECIAMLS:",product.base_increment)	
+        console.log("PASSING IN NUMBER FORM:",(product.base_increment.match(/^-?\d*\.?0*\d{0,1}/)[0]))	
+        console.log("Dollars:",dollarAmt);	
+        console.log("Order Price:",orderPrice);	
+        console.log("Size Before:",size);	
+        console.log("Decimal Precision:",sizeDecimalPrecision);	
+        console.log("FINALLY, HERE IS CALCULATED SIZE:",size);	
+        console.log("=============")
         
         let order: PlaceOrderMessage = {
             time: new Date(),
@@ -102,4 +112,3 @@ const countDecimals = function (value: string) {
     if(value.split(".")[1]) return value.split(".")[1].length || 0; 
     return 0; 
 }
-

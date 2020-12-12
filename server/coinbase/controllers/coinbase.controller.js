@@ -24,7 +24,7 @@ exports.syncOrders = (req, res) => {
         let authorization = req.headers['authorization'].split(' ');
         token = authorization[1];
     }
-    require('../scripts/sync.ts')(token).then(()=>{
+    require('../scripts/sync.ts')(token, req.keys).then(()=>{
         return res.json({ success: true, data: null });
     }).catch(err=>{
         console.log("Failed sync.")
