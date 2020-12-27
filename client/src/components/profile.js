@@ -57,7 +57,7 @@ const Profile = (props) =>{
             });
             setDsetsArrayActual({ datasets: dsets })
         }).catch(err => console.log(err));
-        axios.get(baseUrl+"/api/profile/getTimeSeriesBuys",{params:{type:"adjustedUsd"}}).then((response, error) => {    
+        axios.get(baseUrl+"/profile/getTimeSeriesBuys",{params:{type:"adjustedUsd"}}).then((response, error) => {    
             if(error) throw error;
             let callData = response.data.data.orderPerProduct;
             let spendingTotals = response.data.data.spendingTotals;
