@@ -52,7 +52,6 @@ const Profile = (props) =>{
                 newObj.label = k;
                 newObj.borderColor = colors[count++];
                 newObj.data = callData[k];
-                // data: [eth: [x:123]]
                 dsets.push(newObj);
             });
             setDsetsArrayActual({ datasets: dsets })
@@ -95,8 +94,6 @@ const Profile = (props) =>{
     },[enableEmailAlerts]);
 
     useEffect(() =>{
-        console.log("adjusted:",performanceDataAdjusted , "actual:",performanceDataActual)
-        console.log(performanceDataAdjusted>0 , performanceDataActual.length>0);
         if (performanceDataAdjusted.length>0 && performanceDataActual.length>0) {
             let data = [];
             let record = {};
@@ -124,7 +121,6 @@ const Profile = (props) =>{
             totals.productId = "totals";
             totals.profit = totals.adjustedUsd - totals.actualUsd;
             data.push(totals);
-            console.log("DATA",data)
             setPerformanceData(data);
         }
     },[performanceDataActual,performanceDataAdjusted])
@@ -140,7 +136,6 @@ const Profile = (props) =>{
     
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(validated);
         if(validateForm()){
             api().patch(`/users/${email}`, {updateData}).then((resp) => {   
                 console.log(resp)

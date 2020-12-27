@@ -151,10 +151,7 @@ exports.getCronsByEmail = (req, res) => {
 };
 
 exports.getTimeSeriesBuys = (req, res) => {
-    //let email = req.jwt.user.email;
-    console.log(req.query.type)
-    console.log("truthy",req.query.type === "adjustedUsd")
-    let email = "rmiller07@gmail.com"
+    let email = req.jwt.user.email;
     let orderPerProduct = {};
     let baseUrl = "https://api.coingecko.com/api/v3/simple/price?ids="
     let quote_currency = "&vs_currencies=usd,eth";
@@ -199,7 +196,7 @@ exports.getTimeSeriesBuys = (req, res) => {
                     record.size = aggSize;
                     record.queryType = req.query.type;
                     spendingTotals[idx++] = record;
-                    
+
                     record = {};
                     oData = [];
                     aggSize = 0;
