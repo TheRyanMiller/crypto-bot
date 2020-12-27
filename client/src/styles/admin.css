@@ -30,6 +30,7 @@ input.admin{
     text-align: left;
     font-size: 12px;
     padding-inline-start: 4px;
+    max-width: 500px;
 }
 
 .width90{
