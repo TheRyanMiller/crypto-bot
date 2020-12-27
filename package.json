@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "axios": "^0.19.1",
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "coinbase-pro-trading-toolkit": "^0.4.0",
     "cors": "^2.8.5",

@@ -1,12 +1,16 @@
 const crypto = require('crypto');
+const axios = require('axios').default;
 const Config = require('../schemas/Config');
 const Log = require('../../common/schemas/Log');
+const Order = require('../../orders/schemas/Order');
 const cron = require('../../cron/cron');
+import tickers from '../common/coingeckomap.js';
 const fs = require('fs');
 const path = require('path');
 const mongoose = require("../../common/services/mongoose.service").mongoose;
 const Logger = require('../../common/services/logger');
 const UsersController = require('../../users/models/users.model');
+const moment = require('moment')
 
 exports.listLogs = (req, res) => {
     let query = { email: req.jwt.user.email };
@@ -53,9 +57,6 @@ exports.saveConfig = (req, res) => {
     let options = {new: true, upsert: false, useFindAndModify: false, returnNewDocument: true};
     Config.model.findOneAndUpdate({id:config.id, email:config.email}, set, options, (err, data) => {
         if (err) return res.json({ success: false, error: err });
-        console.log("~~~~~")
-        console.log(data)
-        console.log("~~~~~")
         cron.set(data,null,req.jwt.user.email);
         let log = new Log.model({
             type: "Config change",
@@ -147,4 +148,75 @@ exports.getAllCrons = (req, res) => {
 exports.getCronsByEmail = (req, res) => {
     let crons = cron.getCronsByEmail(req.jwt.user.email);
     return res.json({ success: true, data: crons })
+};
+
+exports.getTimeSeriesBuys = (req, res) => {
+    //let email = req.jwt.user.email;
+    console.log(req.query.type)
+    console.log("truthy",req.query.type === "adjustedUsd")
+    let email = "rmiller07@gmail.com"
+    let orderPerProduct = {};
+    let baseUrl = "https://api.coingecko.com/api/v3/simple/price?ids="
+    let quote_currency = "&vs_currencies=usd,eth";
+    let tickerString = "";
+    Object.keys(tickers).forEach(ticker=>{
+        tickerString += tickers[ticker]+",";
+    })
+    tickerString = tickerString.substring(0,tickerString.length-1);
+    let url = baseUrl + tickerString + quote_currency;
+    axios.get(url).then(resp => {
+        let geckoData = resp.data;
+        Order.distinct("productId",{email}).then(distinctProducts => {
+            let count = 1;
+            let oData = [];
+            let aggSize = 0;
+            let aggUsd = 0;
+            let aggActualUsd = 0;
+            let spendingTotals = [];
+            let idx = 0;
+            let record = {};
+            distinctProducts.forEach(pid =>{
+                orderPerProduct[pid] = [];
+                Order.find({productId: pid, email}).sort({createdAt:1}).then(pOrders => {
+                    pOrders.forEach(o => {
+                        aggSize += o.size;
+                        aggActualUsd = 
+                            o.executed_value ? 
+                                aggActualUsd + Number(o.executed_value) : 
+                                aggActualUsd + o.totalUsdSpent;
+                        if(req.query.type === "adjustedUsd"){
+                            aggUsd = geckoData[tickers[pid]] && geckoData[tickers[pid]].usd ? aggSize * geckoData[tickers[pid]].usd : 0;
+                        }
+                        else {
+                            aggUsd = aggActualUsd;
+                        }
+                        oData.push({x: moment(o.createdAt).format("MM-DD-YY"), y: aggUsd.toFixed(2)})
+                    })
+                    orderPerProduct[pid] = oData;
+
+                    record.productId = pid;
+                    record.usdSpend = aggUsd;
+                    record.size = aggSize;
+                    record.queryType = req.query.type;
+                    spendingTotals[idx++] = record;
+                    
+                    record = {};
+                    oData = [];
+                    aggSize = 0;
+                    aggUsd = 0;
+                    aggActualUsd = 0;
+                    pOrders = null;
+                    if(distinctProducts.length <= count++){
+                        return res.json({ success: true, data: {
+                            orderPerProduct,
+                            spendingTotals
+                        }});
+                    }
+                });
+            })
+        })
+    })
+    
+    
+    
 };

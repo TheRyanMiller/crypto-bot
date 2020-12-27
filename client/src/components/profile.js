@@ -3,8 +3,13 @@ import { withRouter } from "react-router-dom";
 import { Button, Form, FormGroup, FormControl } from "react-bootstrap";
 import { api } from "../apis/apiCalls";
 import Switch from "react-switch";
+import axios from 'axios';
+import moment from 'moment';
+import PerformanceData from './performanceData';
+import { Line, Pie } from 'react-chartjs-2';
 import "../styles/login.css";
 import '../styles/spinner.css';
+import '../styles/profile.css';
 
 
 
@@ -20,9 +25,58 @@ const Profile = (props) =>{
     const [enableEmailAlerts, setEnableEmailAlerts] = useState(true);
     const [updateData, setUpdateData] = useState({});
     const isFirstRun = useRef(true);
+    const [sizeChartData, setSizeChartData] = useState({});
+    const [sizeChartDataset, setSizeChartDataset] = useState({});
+    const [dsetsArrayAdjusted, setDsetsArrayAdjusted] = useState({});
+    const [dsetsArrayActual, setDsetsArrayActual] = useState({});
+    const [performanceDataAdjusted, setPerformanceDataAdjusted] = useState([]);
+    const [performanceDataActual, setPerformanceDataActual] = useState([]);
+    const [performanceData, setPerformanceData] = useState([]);
+    
 
     useEffect(() =>{
         checkDatabaseForUsers();
+        axios.get("http://localhost:3001/api/profile/getTimeSeriesBuys",{params:{type:"actualUsd"}}).then((response, error) => {    
+            if(error) throw error;
+            let callData = response.data.data.orderPerProduct;
+            //get product ids
+            setPerformanceDataActual(response.data.data.spendingTotals);
+            let dsets = [];
+            let newObj = {};
+            let count = 0;
+            let cLabels = [];
+            let colors = ["red","blue","green","purple","orange"]
+            Object.keys(callData).forEach(k=>{
+                newObj = {};
+                newObj.label = k;
+                newObj.borderColor = colors[count++];
+                newObj.data = callData[k];
+                // data: [eth: [x:123]]
+                dsets.push(newObj);
+            });
+            setDsetsArrayActual({ datasets: dsets })
+        }).catch(err => console.log(err));
+        axios.get("http://localhost:3001/api/profile/getTimeSeriesBuys",{params:{type:"adjustedUsd"}}).then((response, error) => {    
+            if(error) throw error;
+            let callData = response.data.data.orderPerProduct;
+            let spendingTotals = response.data.data.spendingTotals;
+            //get product ids
+            setPerformanceDataAdjusted(response.data.data.spendingTotals);
+            let dsets = [];
+            let newObj = {};
+            let count = 0;
+            let cLabels = [];
+            let colors = ["red","blue","green","purple","orange"]
+            Object.keys(callData).forEach(k=>{
+                newObj = {};
+                newObj.label = k;
+                newObj.borderColor = colors[count++];
+                newObj.data = callData[k];
+                // data: [eth: [x:123]]
+                dsets.push(newObj);
+            });
+            setDsetsArrayAdjusted({ datasets: dsets })
+        }).catch(err => console.log(err));
     },[])
 
     useEffect(() =>{
@@ -37,7 +91,42 @@ const Profile = (props) =>{
                 
             }).catch(err => console.log("Failed user data update.",err))
         }
-    },[enableEmailAlerts])
+    },[enableEmailAlerts]);
+
+    useEffect(() =>{
+        console.log("adjusted:",performanceDataAdjusted , "actual:",performanceDataActual)
+        console.log(performanceDataAdjusted>0 , performanceDataActual.length>0);
+        if (performanceDataAdjusted.length>0 && performanceDataActual.length>0) {
+            let data = [];
+            let record = {};
+            let totals = {};
+            totals.actualUsd = 0;
+            totals.actualSize = 0;
+            totals.adjustedUsd = 0;
+            totals.adjustedSize = 0;
+            performanceDataAdjusted.forEach(adj =>{
+                performanceDataActual.forEach(act => {
+                    if(adj.productId === act.productId){
+                        record.productId = adj.productId;
+                        record.actualUsd = act.usdSpend;
+                        record.size = act.size;
+                        record.adjustedUsd = adj.usdSpend;
+                        record.profit = adj.usdSpend - act.usdSpend;
+                        data.push(record);
+                        record = {};
+                        totals.actualUsd = totals.actualUsd + act.usdSpend;
+                        totals.actualSize = totals.actualSize + act.actSize;
+                        totals.adjustedUsd = totals.adjustedUsd + adj.usdSpend;
+                    }
+                })
+            })
+            totals.productId = "totals";
+            totals.profit = totals.adjustedUsd - totals.actualUsd;
+            data.push(totals);
+            console.log("DATA",data)
+            setPerformanceData(data);
+        }
+    },[performanceDataActual,performanceDataAdjusted])
 
     const checkDatabaseForUsers = () => {
         api().get('/users/getCurrentUser').then((resp) => {
@@ -85,79 +174,65 @@ const Profile = (props) =>{
     }
 
     let profileView = ( 
-        <div>
+        <div className="center">
             <Form validated={validated} onSubmit={handleSubmit}>
                 <FormGroup controlId="userinfo">
                 <Form.Label>Enable Email Alerts</Form.Label><br />
                 <Switch checked={enableEmailAlerts} onChange={(el, state) => setEnableEmailAlerts(!enableEmailAlerts)} name='test' />
                 <br /><br />
-                {/* <Form.Label>Old Password</Form.Label>
-                <FormControl
-                    disabled
-                    value={password}
-                    required
-                    onChange={e => {
-                        setPassword(e.target.value);
-                        validateForm();
-                    }}
-                    type="password"
-                />
-                <Form.Label>New Password</Form.Label>
-                <FormControl
-                    disabled
-                    value={password}
-                    required
-                    onChange={e => {
-                        setPassword(e.target.value);
-                        validateForm();
-                    }}
-                    type="password"
-                />
-                <br />
+
                 </FormGroup>
-                <FormGroup controlId="cbp">
-                <div><hr /></div>
-                <div className="cbp">
-                    <Form.Label>Coinbase Pro Key</Form.Label>
-                    <FormControl
-                        value={cbpKey}
-                        required
-                        onChange={e => {
-                            setCbpKey(e.target.value);
-                            validateForm();
-                        }}
-                        type="text"
-                    />
-                    <Form.Label>Coinbase Pro Secret</Form.Label>
-                    <FormControl
-                        value={cbpSecret}
-                        required
-                        onChange={e => {
-                            setCbpSecret(e.target.value);
-                            validateForm();
-                        }}
-                        type="text"
-                    />
-                    <Form.Label>Coinbase Pro Passphrase</Form.Label>
-                    <FormControl
-                        required
-                        value={cbpPassphrase}
-                        required
-                        onChange={e => {
-                            setCbpPassphrase(e.target.value);
-                            validateForm();
-                        }}
-                        type="text"
-                    />
-                    <br /><a style={{color:"white"}} href="#">More info</a>
-                </div> */}
-                </FormGroup>
-                {/* <Button block disabled={false} type="submit">
-                Save
-                </Button><br /> */}
                 <div type="button" className="btn btn-outline-secondary" onClick={()=>handleLogout()}>Logout</div>
 
             </Form>
+            <br />
+            <div>
+                <PerformanceData performanceData={performanceData} />
+            </div>
+            <div className="center" style={{"width":"95%","height": "500px","margin":"auto 0"}}>
+                <Line 
+                    data={dsetsArrayActual} 
+                    options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        title: {
+                            text: "Actual USD Spend",
+                            display: true,
+                            fontSize: 30
+                        },
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                ticks: {
+                                    maxTicksLimit: 8
+                                }
+                            }]
+                        }
+                }}
+                />
+            </div>
+            <div style={{"width":"95%","height": "500px"}}>
+                <Line 
+                    data={dsetsArrayAdjusted} 
+                    options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        title: {
+                            text: "Adjusted USD Spend", 
+                            display: true,
+                            fontSize: 30
+                        },
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                ticks: {
+                                    maxTicksLimit: 8
+                                }
+                            }]
+                        }
+                }}
+                />
+            </div>
         </div>
     );
     let spinner = (<div className="loader">Loading...</div>);

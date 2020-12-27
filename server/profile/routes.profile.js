@@ -38,6 +38,11 @@ exports.routesConfig = function (app) {
         ProfileController.getAllCrons
     ]);
 
+    app.get('/profile/getTimeSeriesBuys', [
+        //ValidationMiddleware.validJWTNeeded,
+        ProfileController.getTimeSeriesBuys
+    ]);
+
     app.post('/profile/addIcon', [
         ValidationMiddleware.validJWTNeeded,
         ProfileController.addIcon

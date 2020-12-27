@@ -57,46 +57,58 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
         return order;
     }
 
+    // Allow some time between order placement and fetching of data.
+    const delayOrderFetch = (orderId: string) => {
+        return new Promise(function(resolve, reject) { 
+            setTimeout( () => resolve(coinbasePro.loadOrder(orderId)), 10000); //Wait 10 seconds  
+        });
+    }
+
     coinbasePro.loadMidMarketPrice(product.id).then((price: BigJS) => {
         console.log("Current "+product.id+" price is: "+(Number(price) - (Number(price) * buyDifferential)).toFixed(2));
         marketPrice = Number(price.toFixed(8));
     })
     .then(()=>{
         coinbasePro.placeOrder(buildOrder()).then((o: LiveOrder) => {
-            return coinbasePro.loadOrder(o.id);
-        }).then((o: any) => {
-            if(o.extra && o.extra.done_reason=="canceled"){
-                o.status = "canceled";
-            }
-            let myOrder = new Order({
-                _id: o.id,
-                id: o.id,
-                email: email,
-                price: o.price,//.toFixed(8), //big number
-                size: o.size,//.toFixed(8), //big number
-                totalUsdSpent: dollarAmt,
-                marketPrice: marketPrice,
-                lastSyncDate: new Date(),
-                time: o.time,
-                productId: o.productId,
-                status: o.status,
-                profile_id: o.extra.profile_id,
-                side: o.extra.side,
-                type: o.extra.type,
-                post_only: o.extra.post_only,
-                created_at: o.extra.created_at,
-                fill_fees: o.extra.fill_fees,
-                filled_size: o.extra.filled_size,
-                executed_value: o.extra.executed_value,
-                fills: []
-            })
-            myOrder.save((err: any)=>{
-                if(err) return console.log("Error writing new order data to mongodb.");
-                console.log(o.extra.type+" order placed, and successful write to local db.");
-                Logger("New "+product.id+" order placed", "New  "+product.id+" order has been placed: "+myOrder.id, "info", JSON.stringify(myOrder), email);
-                return;
+            console.log("Order placed successfully. Now fetching order data...");
+            delayOrderFetch(o.id).then((o: any) => {
+                if(o.extra && o.extra.done_reason=="canceled"){
+                    o.status = "canceled";
+                }
+                let myOrder = new Order({
+                    _id: o.id,
+                    id: o.id,
+                    email: email,
+                    price: o.price,//.toFixed(8), //big number
+                    size: o.size,//.toFixed(8), //big number
+                    totalUsdSpent: dollarAmt,
+                    marketPrice: marketPrice,
+                    lastSyncDate: new Date(),
+                    time: o.time,
+                    productId: o.productId,
+                    status: o.status,
+                    profile_id: o.extra.profile_id,
+                    side: o.extra.side,
+                    type: o.extra.type,
+                    post_only: o.extra.post_only,
+                    created_at: o.extra.created_at,
+                    fill_fees: o.extra.fill_fees,
+                    filled_size: o.extra.filled_size,
+                    executed_value: o.extra.executed_value,
+                    fills: []
+                })
+                myOrder.save((err: any)=>{
+                    if(err) return console.log("Error writing new order data to mongodb.");
+                    console.log(o.extra.type+" order placed, and successful write to local db.");
+                    Logger("New "+product.id+" order placed", "New  "+product.id+" order has been placed: "+myOrder.id, "info", JSON.stringify(myOrder), email);
+                    return;
+                });
+                
+            }).catch(err=>{
+                let cbMessage = "Failed to fetch/write order data for successful "+product.id+" order to database. \n"+err;
+                console.log("Error writing order data to crypto-bot database after delay",err);
+                Logger("Failed writing order to local database", product.id, "error", cbMessage, email, false);
             });
-            
         }).catch(err=>{
             let failedMessage = JSON.parse(err.response.body).message;
             let cbMessage = "Failed "+product.id+" order. "+failedMessage+".";
