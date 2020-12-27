@@ -172,6 +172,10 @@ exports.getTimeSeriesBuys = (req, res) => {
             let spendingTotals = [];
             let idx = 0;
             let record = {};
+            let d = new Date();
+            let ye;
+            let mo;
+            let da;
             distinctProducts.forEach(pid =>{
                 orderPerProduct[pid] = [];
                 Order.find({productId: pid, email}).sort({createdAt:1}).then(pOrders => {
@@ -187,7 +191,12 @@ exports.getTimeSeriesBuys = (req, res) => {
                         else {
                             aggUsd = aggActualUsd;
                         }
-                        oData.push({x: moment(o.createdAt).format("MM-DD-YY"), y: aggUsd.toFixed(2)})
+                        d = new Date(o.createdAt);
+                        ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+                        mo = new Intl.DateTimeFormat('en', { month: 'numeric' }).format(d);
+                        da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+                        //console.log(`${da}-${mo}-${ye}`);
+                        oData.push({x: `${mo}-${da}-${ye}`, y: aggUsd.toFixed(2)})
                     })
                     orderPerProduct[pid] = oData;
 
