@@ -39,7 +39,7 @@ exports.routesConfig = function (app) {
     ]);
 
     app.get('/profile/getTimeSeriesBuys', [
-        //ValidationMiddleware.validJWTNeeded,
+        ValidationMiddleware.validJWTNeeded,
         ProfileController.getTimeSeriesBuys
     ]);
 
