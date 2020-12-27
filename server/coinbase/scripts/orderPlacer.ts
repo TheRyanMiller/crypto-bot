@@ -60,7 +60,7 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
     // Allow some time between order placement and fetching of data.
     const delayOrderFetch = (orderId: string) => {
         return new Promise(function(resolve, reject) { 
-            setTimeout( () => resolve(coinbasePro.loadOrder(orderId)), 10000); //Wait 10 seconds  
+            setTimeout( () => resolve(coinbasePro.loadOrder(orderId)), 15000); //Wait 15 seconds  
         });
     }
 
@@ -70,7 +70,7 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
     })
     .then(()=>{
         coinbasePro.placeOrder(buildOrder()).then((o: LiveOrder) => {
-            console.log("Order placed successfully. Now fetching order data...");
+            console.log("Order "+o.id+" placed successfully. Now fetching order data...");
             delayOrderFetch(o.id).then((o: any) => {
                 if(o.extra && o.extra.done_reason=="canceled"){
                     o.status = "canceled";
@@ -105,9 +105,9 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
                 });
                 
             }).catch(err=>{
-                let cbMessage = "Failed to fetch/write order data for successful "+product.id+" order to database. \n"+err;
+                let cbMessage = "Failed to fetch/write order data for successful "+product.id+" order to database. \nOrder ID: "+o.id+"\n"+err;
                 console.log("Error writing order data to crypto-bot database after delay",err);
-                Logger("Failed writing order to local database", product.id, "error", cbMessage, email, false);
+                Logger("Failed writing order to local database", cbMessage, "error", cbMessage, email, false);
             });
         }).catch(err=>{
             let failedMessage = JSON.parse(err.response.body).message;
