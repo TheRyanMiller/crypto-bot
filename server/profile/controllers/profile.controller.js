@@ -196,7 +196,7 @@ exports.getTimeSeriesBuys = (req, res) => {
                         mo = new Intl.DateTimeFormat('en', { month: 'numeric' }).format(d);
                         da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
                         //console.log(`${da}-${mo}-${ye}`);
-                        oData.push({x: `${mo}-${da}-${ye}`, y: aggUsd.toFixed(2)})
+                        oData.push({x: o.createdAt, y: aggUsd.toFixed(2)})
                     })
                     orderPerProduct[pid] = oData;
 

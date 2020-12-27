@@ -199,6 +199,11 @@ const Profile = (props) =>{
                         scales: {
                             xAxes: [{
                                 type: 'time',
+                                time: {
+                                    displayFormats: {
+                                        quarter: 'MMM YYYY'
+                                    }
+                                },
                                 ticks: {
                                     maxTicksLimit: 8
                                 }
@@ -221,6 +226,11 @@ const Profile = (props) =>{
                         scales: {
                             xAxes: [{
                                 type: 'time',
+                                time: {
+                                    displayFormats: {
+                                        quarter: 'MMM YYYY'
+                                    }
+                                },
                                 ticks: {
                                     maxTicksLimit: 8
                                 }
