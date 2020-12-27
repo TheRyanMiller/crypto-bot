@@ -36,7 +36,8 @@ const Profile = (props) =>{
 
     useEffect(() =>{
         checkDatabaseForUsers();
-        axios.get("http://localhost:3001/api/profile/getTimeSeriesBuys",{params:{type:"actualUsd"}}).then((response, error) => {    
+        let baseUrl = process.env.REACT_APP_API_URL;
+        axios.get(baseUrl+"/profile/getTimeSeriesBuys",{params:{type:"actualUsd"}}).then((response, error) => {    
             if(error) throw error;
             let callData = response.data.data.orderPerProduct;
             //get product ids
@@ -56,7 +57,7 @@ const Profile = (props) =>{
             });
             setDsetsArrayActual({ datasets: dsets })
         }).catch(err => console.log(err));
-        axios.get("http://localhost:3001/api/profile/getTimeSeriesBuys",{params:{type:"adjustedUsd"}}).then((response, error) => {    
+        axios.get(baseUrl+"/api/profile/getTimeSeriesBuys",{params:{type:"adjustedUsd"}}).then((response, error) => {    
             if(error) throw error;
             let callData = response.data.data.orderPerProduct;
             let spendingTotals = response.data.data.spendingTotals;
