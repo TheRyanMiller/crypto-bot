@@ -21,7 +21,7 @@ module.exports = (dbOrder: Order, token: string, productId: string, keys: ApiKey
         typedFill.fills = fills;
         if(fills.length>0){
             //add All fills
-            api(token).post(`/addFills/${dbOrder.id}`,{fills})
+            api(token).post(`/order/addFills/${dbOrder.id}`,{fills})
             .then((resp) => {
                 console.log("Found new fills. /addFills db write success. "+dbOrder.id);
                 resolve(resp);

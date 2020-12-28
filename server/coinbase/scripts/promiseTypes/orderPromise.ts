@@ -43,7 +43,7 @@ module.exports = (id: string, token: string, productId: string) => new Promise((
         authClient.getFills(fillFilter).then( // CALL!
             (fills: any)=>{ 
             if(fills && fills.length>0){
-                api(token).post(`/addFills/${id}`,{fills})
+                api(token).post(`/order/addFills/${id}`,{fills})
                 .then((resp) => {
                     console.log("Added fill data to "+id);
                     resolve(resp);
