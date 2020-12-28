@@ -27,7 +27,7 @@ module.exports = (dbOrder: Order, token: string, productId: string, keys: ApiKey
                 resolve(resp);
             })
             .catch(err => {
-                console.log("Found new fills. /addFills db write failed. "+dbOrder.id,err)
+                console.log("Found new fills. /addFills db write failed. "+dbOrder.id)
                 reject(err);
             });
         }
