@@ -1,34 +1,19 @@
 import { CoinbaseProExchangeAPI } from 'coinbase-pro-trading-toolkit/build/src/exchanges/coinbasePro/CoinbaseProExchangeAPI';
-import { CoinbaseProConfig } from 'coinbase-pro-trading-toolkit/build/src/exchanges/coinbasePro/CoinbaseProInterfaces';
-import * as CBPTT from 'coinbase-pro-trading-toolkit';
 import { LiveOrder } from 'coinbase-pro-trading-toolkit/build/src/lib/Orderbook';
+import { CoinbaseProConfig } from 'coinbase-pro-trading-toolkit/build/src/exchanges/coinbasePro/CoinbaseProInterfaces';
 import { FillFilter } from 'coinbase-pro';
 import { AuthenticatedClient } from 'coinbase-pro';
 import { Order } from '../../interfaces/order';
 import { api } from '../../../common/services/apiAuth';
+import { ApiKey } from '../../interfaces/keys';
+const cbpConfig = require('../../common/cbpConfig');
 
 require('dotenv').config();
+module.exports = (id: string, token: string, productId: string, keys: ApiKey) => new Promise((resolve, reject)=>{
+    const coinbaseProConfig: CoinbaseProConfig = cbpConfig(keys);
+    let authClient = new AuthenticatedClient(coinbaseProConfig.auth.key, coinbaseProConfig.auth.secret, coinbaseProConfig.auth.passphrase, coinbaseProConfig.apiUrl);
+    const coinbasePro = new CoinbaseProExchangeAPI(coinbaseProConfig);
 
-const logger = CBPTT.utils.ConsoleLoggerFactory();
-
-console.log(process.env.COINBASE_PRO_API_URL)
-console.log(process.env.COINBASE_PRO_KEY)
-console.log(process.env.COINBASE_PRO_SECRET)
-console.log(process.env.COINBASE_PRO_PASSPHRASE)
-
-const coinbaseProConfig: CoinbaseProConfig = {
-    logger: logger,
-    apiUrl: process.env.COINBASE_PRO_API_URL || process.env.COINBASE_PRO_API_URL_SANDBOX,
-    auth: {
-        key: process.env.COINBASE_PRO_KEY,
-        secret: process.env.COINBASE_PRO_SECRET,
-        passphrase: process.env.COINBASE_PRO_PASSPHRASE
-    }
-};
-const coinbasePro = new CoinbaseProExchangeAPI(coinbaseProConfig);
-let authClient = new AuthenticatedClient(coinbaseProConfig.auth.key, coinbaseProConfig.auth.secret, coinbaseProConfig.auth.passphrase, coinbaseProConfig.apiUrl);
-
-module.exports = (id: string, token: string, productId: string) => new Promise((resolve, reject)=>{
     coinbasePro.loadOrder(id).then((order: LiveOrder) => { // CALL!
         let o = convertOrderType(order);
         //Grab Fills for this order
