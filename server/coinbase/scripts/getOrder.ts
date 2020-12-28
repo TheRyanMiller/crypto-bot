@@ -19,6 +19,7 @@ module.exports = (id: string, keys: ApiKey) => new Promise((resolve,reject)=>{
             let errorMessage = JSON.parse(err.response.body);
             if(errorMessage.includes("rate limit")) rateLimitError = true;
             let e = {rateLimitError, errorMessage}
+            console.log("Failed to load order",e)
             reject(e);
         }
         catch(e){

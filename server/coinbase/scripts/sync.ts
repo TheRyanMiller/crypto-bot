@@ -23,11 +23,11 @@ module.exports = (token: string, keys: ApiKey) => {
             }
             else{
                 console.log("No open DB orders found.");
-                resolve();
+                resolve("No open db orders found.");
             }
             if(allCBPromises.length>0){
                 Promise.all(allCBPromises).then((resp)=>{
-                    resolve();
+                    resolve(resp);
                 }).catch(function(err) {
                     // log that I have an error, return the entire array;
                     reject(err);
