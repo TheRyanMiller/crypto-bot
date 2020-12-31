@@ -104,7 +104,7 @@ exports.addIcon = (req, res) => {
             tickers.push(c.product.base_currency.toLowerCase());
                 fs.readFile(fileStr+ticker+".png", (err, img)=>{
                     try{
-                        if(err) throw "cannot find ticker"
+                        if(err) throw "cannot find "+ticker+" ticker"
                         query = {id: c.id, email: c.email};
                         set = {$set: { icon:  {data: img, contentType: "image/png"}}};
                         Config.model.findOneAndUpdate(query, set).then((data,err) => {
@@ -153,6 +153,7 @@ exports.getCronsByEmail = (req, res) => {
 exports.getTimeSeriesBuys = (req, res) => {
     let email = req.jwt.user.email;
     let orderPerProduct = {};
+    let feesPerProduct = {};
     let baseUrl = "https://api.coingecko.com/api/v3/simple/price?ids="
     let quote_currency = "&vs_currencies=usd,eth";
     let tickerString = "";
@@ -161,6 +162,27 @@ exports.getTimeSeriesBuys = (req, res) => {
     })
     tickerString = tickerString.substring(0,tickerString.length-1);
     let url = baseUrl + tickerString + quote_currency;
+    const calculateFees = (usdAmnt, buyPrice, size) => {
+        let fee = 0;
+        let sizeLess = 0;
+        if(usdAmnt <= 10){
+            fee = 0.99;
+            sizeLess = (fee / buyPrice);
+        }
+        if(usdAmnt > 10 && usdAmnt <= 25){
+            fee = 1.49;
+            sizeLess = (fee / buyPrice);
+        }
+        if(usdAmnt > 25 && usdAmnt <= 50){
+            fee = 1.99;
+            sizeLess = (fee / buyPrice);
+        }
+        if(usdAmnt > 50){
+            fee = 2.99;
+            sizeLess = (fee / buyPrice);
+        }
+        return {fee,sizeLess,cbpFee: .005 * usdAmnt};
+    }
     axios.get(url).then(resp => {
         let geckoData = resp.data;
         Order.distinct("productId",{email}).then(distinctProducts => {
@@ -176,10 +198,20 @@ exports.getTimeSeriesBuys = (req, res) => {
             let ye;
             let mo;
             let da;
+            let cbFees = 0;
+            let cbpFees = 0;
+            let cbSizeLess = 0;
+            let feeCalc = {};
             distinctProducts.forEach(pid =>{
+                feesPerProduct[pid] = {};
                 orderPerProduct[pid] = [];
                 Order.find({productId: pid, email}).sort({createdAt:1}).then(pOrders => {
                     pOrders.forEach(o => {
+                        feeCalc = calculateFees(o.totalUsdSpent,o.marketPrice,o.size);
+                        cbFees = cbFees + feeCalc.fee;
+                        cbpFees = cbpFees + feeCalc.cbpFee;
+                        cbSizeLess = cbSizeLess + feeCalc.sizeLess;
+                        feeCalc = {};
                         aggSize += o.size;
                         aggActualUsd = 
                             o.executed_value ? 
@@ -199,7 +231,12 @@ exports.getTimeSeriesBuys = (req, res) => {
                         oData.push({x: o.createdAt, y: aggUsd.toFixed(2)})
                     })
                     orderPerProduct[pid] = oData;
-
+                    feesPerProduct[pid].fees = cbFees;
+                    feesPerProduct[pid].size = cbSizeLess;
+                    feesPerProduct[pid].cbpFees = cbpFees;
+                    cbFees = 0;
+                    cbpFees = 0;
+                    cbSizeLess = 0;
                     record.productId = pid;
                     record.usdSpend = aggUsd;
                     record.size = aggSize;
@@ -215,7 +252,8 @@ exports.getTimeSeriesBuys = (req, res) => {
                     if(distinctProducts.length <= count++){
                         return res.json({ success: true, data: {
                             orderPerProduct,
-                            spendingTotals
+                            spendingTotals,
+                            feesPerProduct
                         }});
                     }
                 });

@@ -6,7 +6,6 @@ const performanceData = (props) => {
     let rows = props.performanceData.map((data,idx) => {
       return (
         <PerformanceDataTile performanceData={data} key={idx} />
-
       )
     })
     return(

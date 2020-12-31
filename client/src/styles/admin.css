@@ -12,7 +12,7 @@ input.admin{
 .centerFlexRow{
     text-align: center;
     vertical-align: middle;
-    margin: auto 0px;
+    margin: auto 0;
     display: flex;
     flex-flow: row wrap;
     align-items: center;

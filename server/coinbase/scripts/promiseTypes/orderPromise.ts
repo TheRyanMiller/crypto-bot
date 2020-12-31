@@ -79,7 +79,6 @@ module.exports = (id: string, token: string, productId: string, keys: ApiKey) =>
 
 
 function convertOrderType(o: LiveOrder){
-    console.log(o.extra)
     if(o.extra && o.extra.done_reason=="canceled"){
         o.status = "canceled";
     }

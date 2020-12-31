@@ -292,6 +292,7 @@ const Config = (props) =>{
     let configLayout = (
         <div className="centerFlex" >
             <div className="fontColor center topRoom" style={divStyle}>
+            <br />
             <Select 
                 options={productOptions} 
                 components={{

@@ -21,15 +21,20 @@ module.exports = (dbOrder: Order, token: string, productId: string, keys: ApiKey
         typedFill.fills = fills;
         if(fills.length>0){
             //add All fills
-            api(token).post(`/order/addFills/${dbOrder.id}`,{fills})
-            .then((resp) => {
-                console.log("Found new fills. /addFills db write success. "+dbOrder.id);
-                resolve(resp);
-            })
-            .catch(err => {
-                console.log("Found new fills. /addFills db write failed. "+dbOrder.id)
-                reject(err);
-            });
+            if(token){
+                api(token).post(`/order/addFills/${dbOrder.id}`,{fills})
+                .then((resp) => {
+                    console.log("Found new fills. /addFills db write success. "+dbOrder.id);
+                    resolve(resp);
+                })
+                .catch(err => {
+                    console.log("Found new fills. /addFills db write failed. "+dbOrder.id)
+                    reject(err);
+                });
+            }
+            else{
+                require('../../../orders/controllers/orders.controller').addFillsSimple(fills,dbOrder.id);
+            }
         }
         else{
             console.log("No fill data found for order "+dbOrder.id);

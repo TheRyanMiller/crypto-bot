@@ -20,15 +20,21 @@ const performanceDataTile = (props) => {
                     {props.performanceData.productId}
                 </div>
                 <div className="col2">
-                    {"$"+props.performanceData.actualUsd.toFixed(2)}
+                    <span>
+                        {"$"+props.performanceData.actualUsd.toFixed(2)}
+                    </span>
                 </div>
 
                 <div className="col2">
-                    {"$"+props.performanceData.adjustedUsd.toFixed(2)}
+                    <span>
+                        {"$"+props.performanceData.adjustedUsd.toFixed(2)}
+                    </span>
                 </div>
 
                 <div className="col3">
-                    {"$"+props.performanceData.profit.toFixed(2)}
+                    <span style={{color: props.performanceData.profit>0 ? "#50D050" : "red"}}>
+                        {"$"+props.performanceData.profit.toFixed(2)}
+                    </span>
                 </div>
             </div>
         </div>

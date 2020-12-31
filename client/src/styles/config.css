@@ -24,7 +24,7 @@ input.form-control:disabled, .form-control[readonly]{
 .centerFlex{
     text-align: center;
     vertical-align: middle;
-    margin: auto 0px;
+    margin: auto 0;
     display: flex;
     flex-flow: column wrap;
     align-items: center;

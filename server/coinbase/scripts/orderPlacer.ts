@@ -74,6 +74,9 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
                 if(o.extra && o.extra.done_reason=="canceled"){
                     o.status = "canceled";
                 }
+
+                // Get Fills
+
                 let myOrder = new Order({
                     _id: o.id,
                     id: o.id,
@@ -100,6 +103,7 @@ module.exports = (product: Product, differential: number, dollarAmt: number, ord
                     if(err) return console.log("Error writing new order data to mongodb.");
                     console.log(o.extra.type+" order placed, and successful write to local db.");
                     Logger("New "+product.id+" order placed", "New  "+product.id+" order has been placed: "+myOrder.id, "info", JSON.stringify(myOrder), email);
+                    require('./promiseTypes/fillsPromise.ts')(myOrder, null, product.id, keys)
                     return;
                 });
                 

@@ -32,6 +32,8 @@ const Profile = (props) =>{
     const [performanceDataAdjusted, setPerformanceDataAdjusted] = useState([]);
     const [performanceDataActual, setPerformanceDataActual] = useState([]);
     const [performanceData, setPerformanceData] = useState([]);
+    const [botFees, setBotFees] = useState({});
+    const [totalFeesSaved, setTotalFeesSaved] = useState("");
     
 
     useEffect(() =>{
@@ -56,10 +58,14 @@ const Profile = (props) =>{
             });
             setDsetsArrayActual({ datasets: dsets })
         }).catch(err => console.log(err));
+
         api().get('/profile/getTimeSeriesBuys',{params:{type:"adjustedUsd"}}).then((response, error) => {  
             if(error) throw error;
             let callData = response.data.data.orderPerProduct;
             let spendingTotals = response.data.data.spendingTotals;
+            let feeData = response.data.data.feesPerProduct;
+            console.log(response.data.data.feesPerProduct)
+            setBotFees(feeData)
             //get product ids
             setPerformanceDataAdjusted(response.data.data.spendingTotals);
             let dsets = [];
@@ -78,6 +84,16 @@ const Profile = (props) =>{
             setDsetsArrayAdjusted({ datasets: dsets })
         }).catch(err => console.log(err));
     },[])
+
+    useEffect(() =>{
+        let cbFees = 0;
+        let cbpFees = 0;
+        Object.keys(botFees).forEach(k=>{
+            cbFees += botFees[k].fees;
+            cbpFees += botFees[k].cbpFees;
+        })
+        setTotalFeesSaved((cbFees - cbpFees).toFixed(2));
+    },[botFees]);
 
     useEffect(() =>{
         if (isFirstRun.current) {
@@ -184,8 +200,14 @@ const Profile = (props) =>{
             <br />
             <div>
                 <PerformanceData performanceData={performanceData} />
-            </div>
-            <div className="center" style={{"width":"95%","height": "500px","margin":"auto 0"}}>
+            </div> <br />
+            <div style={{"fontSize":"28px","max-width":"350px","color":"white","margin":"auto","border":"1px solid grey","borderRadius": "25px"}}>
+                Total fees saved:
+                <p style={{"color":"#90EE90", "fontWeight":"bold"}}>
+                    {totalFeesSaved && totalFeesSaved > 0 ? "$"+totalFeesSaved+"🥳" : ""}
+                </p>
+            </div><br />
+            <div className="center" style={{"maxWidth":"700px","width":"95%","height": "500px","margin":"auto 0","textAlign":"center"}}>
                 <Line 
                     data={dsetsArrayActual} 
                     options={{
@@ -194,7 +216,7 @@ const Profile = (props) =>{
                         title: {
                             text: "Actual USD Spend",
                             display: true,
-                            fontSize: 30
+                            fontSize: 26
                         },
                         scales: {
                             xAxes: [{
@@ -212,7 +234,7 @@ const Profile = (props) =>{
                 }}
                 />
             </div>
-            <div style={{"width":"95%","height": "500px"}}>
+            <div style={{"maxWidth":"700px","width":"95%","height": "500px"}}>
                 <Line 
                     data={dsetsArrayAdjusted} 
                     options={{
@@ -221,7 +243,7 @@ const Profile = (props) =>{
                         title: {
                             text: "Adjusted USD Spend", 
                             display: true,
-                            fontSize: 30
+                            fontSize: 26
                         },
                         scales: {
                             xAxes: [{

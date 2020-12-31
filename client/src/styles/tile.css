@@ -136,7 +136,7 @@
   .center{
     text-align: center;
     vertical-align: middle;
-    margin: auto 0px;
+    margin: auto 0;
     align-items: center;
   }
   .small{

@@ -166,5 +166,17 @@ exports.addFills = (req, res) => {
             message: "Written successfully." 
         });
     });
+}
 
+exports.addFillsSimple = (fills, orderId) => {
+    let myFill = new Fill.model({
+        fills
+    });
+    Order.updateOne(
+        { _id: orderId },   
+        { $set: { fills, lastSyncDate: new Date() } },
+        (err)=>{
+        if(err){console.log(err);}
+        else{console.log("Fills written successfully.")}
+    });
 }
