@@ -14,7 +14,7 @@
     "mongoose-encryption": "^2.0.2",
     "morgan": "^1.9.1",
     "node-cron": "^2.0.3",
-    "nodemailer": "^6.4.11",
+    "nodemailer": "^6.4.16",
     "path": "^0.12.7",
     "querystring": "^0.2.0",
     "superagent": "^5.2.1"
